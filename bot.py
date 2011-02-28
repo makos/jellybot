@@ -9,12 +9,14 @@ import time
 
 # Feel free to add new ops
 ops = {"UbrFrG":"South Africa", "makos":"Poland", "fatapaca":"Latvia", "Feath":"Canada"}
+# Chosen Ones
+mods = ("makos", "fatapaca")
 doubles = (00, 11, 22, 33, 44, 55, 66, 77, 88, 99)
 # For !checkem
 dict = ("{0}. Pffft, try harder next time.", "Seriously? {0}? Are you kidding me?", "{0}. You suck.", "Keikaku doori. You failed. {0}.")
 # Add more stuff. kthxbai
 tlnote = ("TL Note: Yuki means snow.", "TL Note: Kuroneko means black cat.", \
-          "TL Note: keikaku means plan.")
+          "TL Note: keikaku means plan.", "TL Note: yome means bride, here it is implied as wife.")
 # any idea how to make this display in multiple lines?
 # """TL Note: Schneizel just made an illegal move in chess, so it doesn't make sense
 #that he could say checkmate, he might possibly say check but the use of the term here is wrong. The only way this could be a legal
@@ -99,7 +101,7 @@ class Bot:
         user = irclib.nm_to_n(arg.source())
         args = arg.arguments()
         user = irclib.nm_to_n(arg.source())
-        if "makos" in user or re.search("torun\.mm\.pl", irclib.nm_to_h(arg.source())):
+        if user in mods or re.search("desu\.wa", irclib.nm_to_h(arg.source())) or re.search("is\.my\.husbando", irclib.nm_to_h(arg.source())):
             if ".quit" in args:
                 self.server.close()
             elif re.search(".say", str(args)):
@@ -112,6 +114,8 @@ class Bot:
                 self.help(user)
             elif re.search(".nick", str(args)):
                 self.server.nick(str(args).split()[1].strip("[']"))
+            elif ".reconnect":
+                self.connect()
         else:
             self.server.privmsg(user, "You are not allowed to use mod commands.")
             print "PRIVMSG from", arg.source(), ":", args
