@@ -5,28 +5,29 @@ import random
 import time
 
 db = sqlite3.connect('lolis.db')
+cur = db.cursor()
 
 def add ( user, lolis):
 	
+	thetime = time.time()
+	
 	#if table not found - create table
-	db.execute('''create table lolis(user text, lolis integer, time integer);''')
+	#cur.execute( 'CREATE TABLE lolis (user TEXT, lolis INTEGER, time INTEGER)' )
 				
 	#Add lolis ( Adds new row )
 	#if !user in rows
-	db.execute('''insert into lolis values (user, lolis, time);''')
+	#Will always add new row
+	cur.execute( 'INSERT INTO lolis VALUES (?, ?, ?)', ( user, lolis, int(thetime) ) )
+
 	#elif
-	#db.execute('''UPDATE lolis SET lolis = 500, time = 1999 WHERE user = "fatapaca";''')
+	cur.execute( 'UPDATE lolis SET lolis = ?, time = ? WHERE user = ?', (lolis, int(thetime), user  ))
+	db.commit()
 	print "Added"
 
-def save():
-	#Add commit changes
-	conn.commit()
-
-	#Close file
-	conn.close()
-	return
-
 def load( user ):
+	# Y WON'T U WORK
+	cur.execute( 'SELECT * FROM lolis WHERE user = ?', user )
+	print cur.fetchall()
 	return
 
 def loli( user, time):
@@ -51,6 +52,7 @@ def loli( user, time):
 
 if __name__ == "__main__":
 	loli("fatapaca", time.time())
+	#loli("makos", time.time())
 
 
 
