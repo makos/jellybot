@@ -7,9 +7,14 @@ import re
 import random
 import time
 
+# Feel free to add new ops
 ops = {"UbrFrG":"South Africa", "makos":"Poland", "fatapaca":"Latvia", "Feath":"Canada"}
 doubles = (00, 11, 22, 33, 44, 55, 66, 77, 88, 99)
-dict = ("{0}. Pffft, try harder next time.", "Seriously? {0}? Are you kidding me?", "{0}. You suck.")
+# For !checkem
+dict = ("{0}. Pffft, try harder next time.", "Seriously? {0}? Are you kidding me?", "{0}. You suck.", "Keikaku doori. You failed. {0}.")
+# Add more stuff. kthxbai
+tlnote = ("TL Note: Yuki means snow.", "TL Note: Kuroneko means black cat.", \
+          "TL Note: keikaku means plan.")
 
 # Global Settings
 channel = "#infinite-stratos"
@@ -17,6 +22,7 @@ con = "irc.rizon.net"
 nick = "Jellybot"
 user = "u jelly"
 port = 6667
+# For !checkem cooldown
 i = 0
 
 class Bot:
@@ -34,6 +40,9 @@ class Bot:
             print arg.source(), ":", args
         elif "!checkem" in args:
             self.checkem(user)
+            print arg.source(), ":", args
+        elif "!tlnote" in args:
+            self.tlnote()
             print arg.source(), ":", args
         else:
             print arg.source(), ":", args
@@ -95,6 +104,8 @@ class Bot:
         print "CTCP ACTION:", arg
     
     def checkem(self, user):
+         """Check those dubs."""
+         
         number = random.randint(00, 99)
 
         global i
@@ -110,6 +121,12 @@ class Bot:
             self.server.privmsg(channel, "I'm tired. Fuck off.")
             i = 0
             time.sleep(120)
+        
+    def tlnote(self):
+         """TL Note: docstring is what you are reading now."""
+         
+        self.server.privmsg(channel, random.choice(tlnote))
+        
         
     def connect(self):
         """Main function, connecting to server and channel and setting up event handlers."""
