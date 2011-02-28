@@ -15,6 +15,25 @@ dict = ("{0}. Pffft, try harder next time.", "Seriously? {0}? Are you kidding me
 # Add more stuff. kthxbai
 tlnote = ("TL Note: Yuki means snow.", "TL Note: Kuroneko means black cat.", \
           "TL Note: keikaku means plan.")
+# any idea how to make this display in multiple lines?
+# """TL Note: Schneizel just made an illegal move in chess, so it doesn't make sense
+#that he could say checkmate, he might possibly say check but the use of the term here is wrong. The only way this could be a legal
+#move is if this were blitz chess, also known as "Fast Chess". However, in this scene, it is never declared they are playing "Fast Chess",
+#and neither of the players are using clocks to time their turns in the game. (Source: /a/)
+#TL Note 2: The reason why Schneizel did this is because the game was going to turn into a threefold rep. By pulling this illegal move, he
+#is able to gain insight into Zero's personality, and "un-mask" part of him, thus fulfilling his victory condition in a subtle and Schneizel-ish
+#manner. To look at the picture more properly, think of the chess board not as a game but as a battlefield. Zero's other options were to take his King,
+#which would have made him similar to his father, or to call Schneizel out on making an illegal move, which would have made Zero look dumb since
+#"lol rules of war". What Zero chose to do was keep his pride and run away from a free victory. Furthermore, by placing his King behind a pawn instead
+#of any other open tile, Zero symbolically shows cowardice.
+#TL Note 3: Alternatively, read it like this:
+#[aers|laptop] Well personally I think the symbolism in Schneizel moving his king is that he wants to be buddy-buddy with Zero. And that Zero moving
+#behind the pawn is because he is afraid of Schneizel's advances. (Geass is about yaoi and shit, so the likelihood of aers being correct is somewhere
+#over 9000.)
+#TL Note 4: This scene is interesting because it raises the question of whether or not Schneizel "plays dirty" in bed with Canon. :3
+#CHECKMATE."""
+# whew.
+
 
 # Global Settings
 channel = "#infinite-stratos"
@@ -53,6 +72,7 @@ class Bot:
         self.server.privmsg(user, "Available commands:")
         self.server.privmsg(user, "* !help - this dialog")
         self.server.privmsg(user, "* !checkem - check 'em")
+        self.server.privmsg(user, "* !tlnote - themoaryouknow")
         return None
         
     def ctcp(self, connection, event):
