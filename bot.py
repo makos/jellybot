@@ -104,7 +104,7 @@ class Bot:
         print "CTCP ACTION:", arg
     
     def checkem(self, user):
-         """Check those dubs."""
+        """Check those dubs."""
          
         number = random.randint(00, 99)
 
@@ -123,7 +123,7 @@ class Bot:
             time.sleep(120)
         
     def tlnote(self):
-         """TL Note: docstring is what you are reading now."""
+        """TL Note: docstring is what you are reading now."""
          
         self.server.privmsg(channel, random.choice(tlnote))
         
