@@ -5,6 +5,7 @@ import irclib
 irclib.DEBUG=False
 import re
 import random
+import time
 
 ops = {"UbrFrG":"South Africa", "makos":"Poland", "fatapaca":"Latvia", "Feath":"Canada"}
 doubles = (00, 11, 22, 33, 44, 55, 66, 77, 88, 99)
@@ -16,6 +17,7 @@ con = "irc.rizon.net"
 nick = "Jellybot"
 user = "u jelly"
 port = 6667
+i = 0
 
 class Bot:
     
@@ -94,7 +96,8 @@ class Bot:
     
     def checkem(self, user):
         number = random.randint(00, 99)
-        
+
+        global i
         global channel
         if number in doubles:
             self.server.privmsg(channel, "CHECK EM! {0} rolled {1}".format(user, number))
@@ -102,7 +105,12 @@ class Bot:
             self.server.privmsg(channel, random.choice(dict).format(number))
             #self.server.kick(channel, user)
             #print "KICKED:", user
-
+        i += 1
+        if i > 7:
+            self.server.privmsg(channel, "I'm tired. Fuck off.")
+            i = 0
+            time.sleep(120)
+        
     def connect(self):
         """Main function, connecting to server and channel and setting up event handlers."""
         
