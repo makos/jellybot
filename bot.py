@@ -4,10 +4,11 @@
 import irclib
 irclib.DEBUG=False
 import re
-from random import randint
+import random
 
 ops = {"UbrFrG":"South Africa", "makos":"Poland", "fatapaca":"Latvia", "Feath":"Canada"}
 doubles = (00, 11, 22, 33, 44, 55, 66, 77, 88, 99)
+dict = ("{0}. Pffft, try harder next time.", "Seriously? {0}? Are you kidding me?", "{0}. You suck.")
 
 # Global Settings
 channel = "#infinite-stratos"
@@ -92,14 +93,15 @@ class Bot:
         print "CTCP ACTION:", arg
     
     def checkem(self, user):
-        number = randint(00, 99)
+        number = random.randint(00, 99)
         
         global channel
         if number in doubles:
             self.server.privmsg(channel, "CHECK EM! {0} rolled {1}".format(user, number))
         else:
-            self.server.kick(channel, user)
-            print "KICKED:", user
+            self.server.privmsg(channel, random.choice(dict).format(number))
+            #self.server.kick(channel, user)
+            #print "KICKED:", user
 
     def connect(self):
         """Main function, connecting to server and channel and setting up event handlers."""
