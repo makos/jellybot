@@ -7,11 +7,15 @@ import time
 db = sqlite3.connect('lolis.db')
 
 def add ( user, lolis):
-	#Create table
-	#db.execute('''create table lolis(user text, lolis text)''')
+	
+	#if table not found - create table
+	db.execute('''create table lolis(user text, lolis integer, time integer);''')
 				
-	#Add lolis
-	db.execute('''insert into lolis(user) lolis ''')
+	#Add lolis ( Adds new row )
+	#if !user in rows
+	db.execute('''insert into lolis values (user, lolis, time);''')
+	#elif
+	#db.execute('''UPDATE lolis SET lolis = 500, time = 1999 WHERE user = "fatapaca";''')
 	print "Added"
 
 def save():
