@@ -13,7 +13,7 @@ ops = {"UbrFrG":"South Africa", "makos":"Poland", "fatapaca":"Latvia", "Feath":"
 mods = ("makos", "fatapaca")
 doubles = (00, 11, 22, 33, 44, 55, 66, 77, 88, 99)
 # For !checkem
-dict = ("{0}. Pffft, try harder next time.", "Seriously? {0}? Are you kidding me?", "{0}. You suck.", "Keikaku doori. You failed. {0}.")
+dict = ("{0}. Pffft, try harder next time.", "Seriously? {0}? Are you kidding me?", "{0}. You suck.", "Keikaku doori. You failed. {0}.", "Only bakas get {0}")
 # Add more stuff. kthxbai
 tlnote = ("TL Note: Yuki means snow.", "TL Note: Kuroneko means black cat.", \
           "TL Note: keikaku means plan.", "TL Note: yome means bride, here it is implied as wife.", \
@@ -40,21 +40,23 @@ tlnote = ("TL Note: Yuki means snow.", "TL Note: Kuroneko means black cat.", \
 
 # Global Settings
 channel = "#infinite-stratos"
+#channel = "#ujelly" #Test channel
 con = "irc.rizon.net"
 nick = "Jellybot"
 user = "u jelly"
 port = 6667
+
 # For !checkem cooldown
 last_usage = 0
 
 class Bot:
-    
+
     irc = irclib.IRC()
     server = irc.server()
-    
+
     def callback(self, handle, arg):
         """Standard callback function. Defines default commands to be used by typing them into chat."""
-        
+
         user = irclib.nm_to_n(arg.source())
         args = arg.arguments()
         if "!help" in args:
@@ -68,36 +70,36 @@ class Bot:
             print arg.source(), ":", args
         else:
             print arg.source(), ":", args
-        
+
     def help(self, user):
         """Sends help dialog via PM to user that asked."""
-         
+
         self.server.privmsg(user, "Available commands:")
         self.server.privmsg(user, "* !help - this dialog")
         self.server.privmsg(user, "* !checkem - check 'em")
         self.server.privmsg(user, "* !tlnote - themoaryouknow")
         return None
-        
+
     def ctcp(self, connection, event):
         """Sends CTCP answer to VERSION query."""
-         
+
         if event.arguments() [0].upper() == "VERSION":
             connection.ctcp_reply(event.source().split('!')[0], "VERSION Python-IRCLib bot v0.2")
             print "Responded to CTCP VERSION query from", event.source()
-            
+
     def join(self, handle, arg):
         """Callback function greeting users joining the channel."""
-        
+
         global channel
         if irclib.nm_to_n(arg.source()) in ops.keys():
             self.server.privmsg(channel, "{0}, the representative candidate from {1} is here!".format(irclib.nm_to_n(arg.source()), ops.get(irclib.nm_to_n(arg.source()))))
             print "JOIN: ", arg.source()
         else:
             pass
-        
+
     def modcmd(self, handle, arg):
         """Callback function for moderator commands (quit etc.)"""
-        
+
         global channel
         user = irclib.nm_to_n(arg.source())
         args = arg.arguments()
@@ -120,44 +122,52 @@ class Bot:
         else:
             self.server.privmsg(user, "You are not allowed to use mod commands.")
             print "PRIVMSG from", arg.source(), ":", args
-        
+
     def action(self, arg):
         """Prints /me action in given channel."""
-        
+
         global channel
         self.server.ctcp('action', channel, arg)
         print "CTCP ACTION:", arg
-    
+
     def checkem(self, user):
         """Check those dubs."""
-			
+
         number = random.randint(00, 99)
 
         global channel, last_usage
-	    #Wait five seconds before actually doing anything
-        # IT DOESN'T WORKASDSFGZr
-        if (int(time.time()) - last_usage) < 5:
-            self.server.privmsg(channel, "Calm down, bro.")
-        else:
-            if number in doubles:
-                self.server.privmsg(channel, "CHECK EM! {0} rolled {1}".format(user, number))
-		
-            elif random.randint(0, 2) > 1:
-                self.server.privmsg(channel, random.choice(dict).format(number))
-                #self.server.kick(channel, user)
-                #print "KICKED:", user
-            last_usage += 1
-    
-        
+
+        #Wait five seconds before actually doing anything
+        if int(time.time()) - last_usage < 5:
+			if random.randint(0, 3) == 0:
+				self.server.privmsg(channel, "Calm down, bro.")
+				return
+
+        if number in doubles:
+			if number == 00:
+				self.server.privmsg(channel, "CHECK EM! {0} rolled 00".format(user))
+			else:
+				self.server.privmsg(channel, "CHECK EM! {0} rolled {1}".format(user, number))
+
+        elif random.randint(0, 2) == 1:
+            self.server.privmsg(channel, random.choice(dict).format(number))
+            return
+            #self.server.kick(channel, user)
+            #print "KICKED:", user
+
+		#Log last usage time
+        last_usage = int(time.time())
+
+
     def tlnote(self):
         """TL Note: docstring is what you are reading now."""
-         
+
         self.server.privmsg(channel, random.choice(tlnote))
-        
-        
+
+
     def connect(self):
         """Main function, connecting to server and channel and setting up event handlers."""
-        
+
         global con, user, channel, nick, port
         self.server.connect(con, port, nick)
         self.server.user(user, user)
@@ -167,7 +177,7 @@ class Bot:
         self.server.add_global_handler("ctcp", self.ctcp)
         self.server.add_global_handler("join", self.join)
         self.irc.process_forever()
-        
+
 
 if __name__ == "__main__":
     bot = Bot()
