@@ -44,7 +44,7 @@ nick = "Jellybot"
 user = "u jelly"
 port = 6667
 # For !checkem cooldown
-i = 0
+last_usage = 0
 
 class Bot:
     
@@ -130,21 +130,21 @@ class Bot:
     def checkem(self, user):
         """Check those dubs."""
          
+		 #Wait five seconds before actually doing anything
+		if( (time.time() - last_usage) < 5 )
+			self.server.privmsg(channel, "Calm down, bro")
+			return
+				
         number = random.randint(00, 99)
 
-        global i
         global channel
-        if number in doubles:
+        
+		if number in doubles:
             self.server.privmsg(channel, "CHECK EM! {0} rolled {1}".format(user, number))
-        else:
+		elif ( random.randint(0, 2) > 1 ):
             self.server.privmsg(channel, random.choice(dict).format(number))
             #self.server.kick(channel, user)
             #print "KICKED:", user
-        i += 1
-        if i > 7:
-            self.server.privmsg(channel, "I'm tired. Fuck off.")
-            i = 0
-            time.sleep(120)
         
     def tlnote(self):
         """TL Note: docstring is what you are reading now."""
