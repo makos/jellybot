@@ -129,22 +129,24 @@ class Bot:
     
     def checkem(self, user):
         """Check those dubs."""
-         
-		 #Wait five seconds before actually doing anything
-		if( (time.time() - last_usage) < 5 )
-			self.server.privmsg(channel, "Calm down, bro")
-			return
-				
+			
         number = random.randint(00, 99)
 
-        global channel
-        
-		if number in doubles:
-            self.server.privmsg(channel, "CHECK EM! {0} rolled {1}".format(user, number))
-		elif ( random.randint(0, 2) > 1 ):
-            self.server.privmsg(channel, random.choice(dict).format(number))
-            #self.server.kick(channel, user)
-            #print "KICKED:", user
+        global channel, last_usage
+	    #Wait five seconds before actually doing anything
+        # IT DOESN'T WORKASDSFGZ
+        if (int(time.time()) - last_usage) < 5:
+            self.server.privmsg(channel, "Calm down, bro.")
+        else:
+            if number in doubles:
+                self.server.privmsg(channel, "CHECK EM! {0} rolled {1}".format(user, number))
+		
+            elif random.randint(0, 2) > 1:
+                self.server.privmsg(channel, random.choice(dict).format(number))
+                #self.server.kick(channel, user)
+                #print "KICKED:", user
+            last_usage += 1
+    
         
     def tlnote(self):
         """TL Note: docstring is what you are reading now."""
