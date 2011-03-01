@@ -11,7 +11,7 @@ import time
 ops = {"UbrFrG":"South Africa", "makos":"Poland", "fatapaca":"Latvia", "Feath":"Canada"}
 # Chosen Ones
 mods = ("makos", "fatapaca")
-doubles = (00, 11, 22, 33, 44, 55, 66, 77, 88, 99)
+doubles = ('00', 11, 22, 33, 44, 55, 66, 77, 88, 99)
 # For !checkem
 dict = ("{0}. Pffft, try harder next time.", "Seriously? {0}? Are you kidding me?", "{0}. You suck.", "Keikaku doori. You failed. {0}.", "Only bakas get {0}")
 # Add more stuff. kthxbai
@@ -78,7 +78,6 @@ class Bot:
         self.server.privmsg(user, "* !help - this dialog")
         self.server.privmsg(user, "* !checkem - check 'em")
         self.server.privmsg(user, "* !tlnote - themoaryouknow")
-        return None
 
     def ctcp(self, connection, event):
         """Sends CTCP answer to VERSION query."""
@@ -144,10 +143,7 @@ class Bot:
 				return
 
         if number in doubles:
-			if number == 00:
-				self.server.privmsg(channel, "CHECK EM! {0} rolled 00".format(user))
-			else:
-				self.server.privmsg(channel, "CHECK EM! {0} rolled {1}".format(user, number))
+			self.server.privmsg(channel, "CHECK EM! {0} rolled {1}".format(user, number))
 
         elif random.randint(0, 2) == 1:
             self.server.privmsg(channel, random.choice(dict).format(number))
