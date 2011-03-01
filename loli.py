@@ -10,9 +10,9 @@ def create ():
     """Creates table structure"""
 
     #if table not found - create table
-    cur.execute( 'CREATE TABLE lolis (user TEXT, lolis INTEGER, time INTEGER)' )
-
-    # TODO: Handle db exceptions (eg. table already exists)
+    cur.execute( 'CREATE TABLE IF NOT EXISTS lolis (user TEXT, lolis INTEGER, time INTEGER)' )
+    #except sqlite3.OperationalError, msg:
+    #print msg
 
     print "Created table"
 
@@ -23,7 +23,7 @@ def add( user, lolis ):
     thetime = time.time()
 
     #Insert user data into table
-    cur.execute( 'INSERT INTO lolis VALUES (?, ?, ?)', ( user, lolis, int(thetime) ) )
+    cur.execute( 'INSERT INTO lolis VALUES ("{}", "{}", "{}")'.format( user, lolis, int(thetime) ) )
 
     print "Added"
 
@@ -34,65 +34,93 @@ def update( user, lolis ):
     thetime = time.time()
 
     #Find user and update loli count and timestamp
-    cur.execute( 'UPDATE lolis SET lolis = ?, time = ? WHERE user = ?', (lolis, int(thetime), user  ))
+    cur.execute( 'UPDATE lolis SET lolis = "{}", time = "{}" WHERE user = "{}"'.format( lolis, int(thetime), user ) )
 
-    print "Updated"
+def load( user ):
+    """Loads user data"""
 
-def load( user, what ):
+    cur.execute('SELECT lolis, time FROM lolis WHERE user="{}"'.format(user))
 
-    print "DB: Getting", what, "for user", user
-    cur.execute('SELECT "{0}" FROM lolis WHERE user="{1}"'.format(what, user))
+    #Fetch all data from our querie
+    data = cur.fetchall()
 
-    #print cur.fetchall()
-    print "DB: Returned", cur.fetchone()
-    return cur.fetchone()
+    return data
 
 def loli( user, time):
 
-    last_usage = time
-    interval = 3600
+    #Interval between command in seconds
+    #6 hours should be sane interval
+    interval = 5 #Keeping it at 5 seconds for testing purposes
 
+    #Min and Max # of lolis you can get
     min_lolis = 0
     max_lolis = 10
 
+    #Save mode:
+    #   0: Adds new row for user
+    #   1: Updates previous record
     mode = 0
 
-    #Load data?
-    lolis = load( user, "lolis" )
-    print "Lolis:", lolis
-    last_usage = load( user, "time" )
-    print "Timestamp:", last_usage
+    #Loads user data
+    data = load( user )
 
-    #if (lolis == 0 or last_usage == 0):
-    #    mode = 1
+    #Set default starting values
+    lolis = 0
+    last_usage = 0
 
-    #if( (int(time) - int(last_usage)) > interval ):
-    #    print "Calm down, bro"
-    #    return
+    #If we did load anything, assign values
+    if( data ):
+        lolis = data[0][0]
+        last_usage = data[0][1]
 
-    lolis = random.randint( min_lolis, max_lolis)
+    #If timestamp is greater than zero, set mode to update data
+    if ( last_usage > 0 ):
+        mode = 1
 
-    print user, "got", lolis, "lolis!"
+    #Little debug message
+    #print "--> Time: {} Save time: {} Difference: {}".format(time, last_usage, time - last_usage)
 
+    #Check cooldown interval
+    if( (int(time) - int(last_usage)) < interval ):
+        print "Calm down,", user
+        return
+
+    #Generate random number from min to max value
+    newlolis = random.randint( min_lolis, max_lolis)
+
+    #Add new value to total number of lolis
+    lolis += newlolis
+
+    #Announce results
+    print user, "got", newlolis, "lolis! And has total of", lolis, "lolis!"
+
+    #Save data
     if mode == 0:
-        update( user, lolis)
-    elif mode == 1:
+        #Insert new user
         add( user, lolis )
+    elif mode == 1:
+        #Update previous record
+        update( user, lolis)
 
 if __name__ == "__main__":
 
     global db, cur
 
-    print "Opening database"
+    #Open database
     db = sqlite3.connect('lolis.db')
-    cur = db.cursor()
-    print "-> Done"
 
-    #create()
+    #Create cursor
+    cur = db.cursor()
+
+    #Try to create table in database
+    create()
 
     loli("fatapaca", time.time())
-    #loli("makos", time.time())
+    loli("makos", time.time())
 
+    #Commit changes
     db.commit()
+
+    #Close everything
+    cur.close()
     db.close()
-    print "Saved and closed"
