@@ -6,6 +6,24 @@ import time
 
 global db, cur
 
+def open():
+
+    global db, cur
+
+    #Open database
+    db = sqlite3.connect('lolis.db')
+
+    #Create cursor
+    cur = db.cursor()
+
+def save():
+    #Commit changes
+    db.commit()
+
+    #Close everything
+    cur.close()
+    db.close()
+
 def create ():
     """Creates table structure"""
 
@@ -13,8 +31,6 @@ def create ():
     cur.execute( 'CREATE TABLE IF NOT EXISTS lolis (user TEXT, lolis INTEGER, time INTEGER)' )
     #except sqlite3.OperationalError, msg:
     #print msg
-
-    print "Created table"
 
 def add( user, lolis ):
     """Insert new user in database"""
@@ -24,8 +40,6 @@ def add( user, lolis ):
 
     #Insert user data into table
     cur.execute( 'INSERT INTO lolis VALUES ("{}", "{}", "{}")'.format( user, lolis, int(thetime) ) )
-
-    print "Added"
 
 def update( user, lolis ):
     """Updates user data"""
@@ -82,8 +96,8 @@ def loli( user, time):
 
     #Check cooldown interval
     if( (int(time) - int(last_usage)) < interval ):
-        print "Calm down,", user
-        return
+        output = "Calm down, {}".format( user )
+        return output
 
     #Generate random number from min to max value
     newlolis = random.randint( min_lolis, max_lolis)
@@ -92,8 +106,9 @@ def loli( user, time):
     lolis += newlolis
 
     #Announce results
-    print user, "got", newlolis, "lolis! And has total of", lolis, "lolis!"
+    output = "{} got, {} lolis! And has total of {} lolis!".format( user, newlolis, lolis)
 
+    print output;
     #Save data
     if mode == 0:
         #Insert new user
@@ -102,15 +117,11 @@ def loli( user, time):
         #Update previous record
         update( user, lolis)
 
+    return output
+
 if __name__ == "__main__":
 
-    global db, cur
-
-    #Open database
-    db = sqlite3.connect('lolis.db')
-
-    #Create cursor
-    cur = db.cursor()
+    open()
 
     #Try to create table in database
     create()
@@ -118,9 +129,4 @@ if __name__ == "__main__":
     loli("fatapaca", time.time())
     loli("makos", time.time())
 
-    #Commit changes
-    db.commit()
-
-    #Close everything
-    cur.close()
-    db.close()
+    save()

@@ -6,6 +6,7 @@ irclib.DEBUG=False
 import re
 import random
 import time
+import loli
 
 # Feel free to add new ops
 ops = {"UbrFrG":"South Africa", "makos":"Poland", "fatapaca":"Latvia", "Feath":"Canada"}
@@ -46,7 +47,7 @@ eightball = ("Yes, {}.", "No, {}.", "Who knows?", "Maybe, {}.", "How should I kn
 channel = "#infinite-stratos"
 #channel = "#ujelly" #Test channel
 con = "irc.rizon.net"
-nick = "Jellybot"
+nick = "Jollybot"
 user = "u jelly"
 port = 6667
 
@@ -74,6 +75,21 @@ class Bot:
             print arg.source(), ":", args
         elif re.search("!eightball", str(args)):
             self.eightball(user)
+        elif re.search( "!loli", str(args) ):
+			#Open db
+			loli.open()
+
+			#Create db if needed
+			loli.create()
+
+			#Execute command and return output
+			output = loli.loli( user, time.time() )
+
+			if output:
+				self.server.privmsg(channel, output )
+
+			#Close db
+			loli.save()
         else:
             print arg.source(), ":", args
 
@@ -166,7 +182,7 @@ class Bot:
 
     def eightball(self, user):
         """See the future."""
-        
+
         self.server.privmsg(channel, random.choice(eightball).format(user))
 
     def connect(self):
