@@ -16,7 +16,8 @@ doubles = (00, 11, 22, 33, 44, 55, 66, 77, 88, 99)
 dict = ("{0}. Pffft, try harder next time.", "Seriously? {0}? Are you kidding me?", "{0}. You suck.", "Keikaku doori. You failed. {0}.")
 # Add more stuff. kthxbai
 tlnote = ("TL Note: Yuki means snow.", "TL Note: Kuroneko means black cat.", \
-          "TL Note: keikaku means plan.", "TL Note: yome means bride, here it is implied as wife.")
+          "TL Note: keikaku means plan.", "TL Note: yome means bride, here it is implied as wife.", \
+          "TL Note: Hourou Musuko means What The Fuck Am I Watching.")
 # any idea how to make this display in multiple lines?
 # """TL Note: Schneizel just made an illegal move in chess, so it doesn't make sense
 #that he could say checkmate, he might possibly say check but the use of the term here is wrong. The only way this could be a legal
@@ -134,7 +135,7 @@ class Bot:
 
         global channel, last_usage
 	    #Wait five seconds before actually doing anything
-        # IT DOESN'T WORKASDSFGZ
+        # IT DOESN'T WORKASDSFGZr
         if (int(time.time()) - last_usage) < 5:
             self.server.privmsg(channel, "Calm down, bro.")
         else:
