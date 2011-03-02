@@ -5,7 +5,7 @@ import irclib, re, random, time
 irclib.DEBUG=False # True for shitload of verbose text
 
 #Plugins
-import loli, checkem, eightball, google, gelbooru, timeleft
+import loli, checkem, eightball, google, gelbooru, timeleft, chat
 
 # Feel free to add new ops
 ops = {"UbrFrG":"South Africa", "makos":"Poland", "fatapaca":"Latvia", "Feath":"Canada"}
@@ -41,7 +41,7 @@ tlnote = ("TL Note: Yuki means snow.", "TL Note: Kuroneko means black cat.", \
 # Global Settings
 #channel = "#infinite-stratos"
 channel = "#ujelly" #Test channel. Comment above before uncommenting this
-nick = "Jollybot"
+nick = "Jellybot"
 con = "irc.rizon.net"
 user = "u jelly"
 port = 6667
@@ -56,9 +56,9 @@ class Bot:
 
         user = irclib.nm_to_n(arg.source())
         args = arg.arguments()
+
         if "!help" in args:
             self.server.privmsg(user, self.help(user))
-            print arg.source(), ":", args
         elif "!checkem" in args:
             output = checkem.checkem( user )
 
@@ -67,7 +67,6 @@ class Bot:
 
         elif "!tlnote" in args:
             self.tlnote()
-            print arg.source(), ":", args
         elif re.search("^!eightball", str(args).strip("[']")):              # To have the ^ wildcard working in regexp we need to strip args from ['] first.
             self.server.privmsg( channel, eightball.eightball( user ) )
         elif re.search( "^!loli", str(args).strip("[']")):
@@ -90,13 +89,14 @@ class Bot:
         elif re.search("^!gelbooru", str(args).strip("[']")):
             self.server.privmsg(channel, gelbooru.open(str(str(args).strip("[']")[9:])))
         elif re.search( "^!timeleft", str(args).strip("[']") ):
-			self.server.privmsg(channel, timeleft.timeleft( user ))
+            self.server.privmsg(channel, timeleft.timeleft( user ))
         elif re.search("^POMF =3", str(args).strip("[']")):
             self.server.privmsg(channel, "Wah!")
         elif re.search("^Wah!", str(args).strip("[']")):
             self.server.privmsg(channel, "What are we gonna do on the bed?")
         else:
-            print arg.source(), ":", args
+            #print arg.source(), ":", args
+            return
 
     def help(self, user):
         """Sends help dialog via PM to user that asked."""
@@ -146,9 +146,11 @@ class Bot:
                 self.help(user)
             elif re.search(".nick", str(args)):
                 self.server.nick(str(args).split()[1].strip("[']"))
+            else:
+                self.server.privmsg( user, chat.parse( user, str(args).strip("[']") ) )
         else:
-            self.server.privmsg(user, "You are not allowed to use mod commands.")
-            print "PRIVMSG from", arg.source(), ":", args
+			self.server.privmsg(user, "You are not allowed to use mod commands.")
+			print "PRIVMSG from", arg.source(), ":", args
 
     def action(self, arg):
         """Prints /me action in given channel."""
