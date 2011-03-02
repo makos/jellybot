@@ -48,7 +48,7 @@ tlnote = ("TL Note: Yuki means snow.", "TL Note: Kuroneko means black cat.", \
 #channel = "#infinite-stratos"
 channel = "#ujelly" #Test channel
 con = "irc.rizon.net"
-nick = "Jollybot"
+nick = "Jellybot"
 user = "u jelly"
 port = 6667
 
@@ -95,7 +95,7 @@ class Bot:
             #Close db
             loli.save()
         elif re.search( "!google", str(args) ):
-            self.server.privmsg( channel, google.search( user, args ) )
+            self.server.privmsg( channel, google.search( user, str(args).strip("[']")[7:] ) )
         else:
             print arg.source(), ":", args
 
