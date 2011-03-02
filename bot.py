@@ -40,7 +40,7 @@ tlnote = ("TL Note: Yuki means snow.", "TL Note: Kuroneko means black cat.", \
 
 # Global Settings
 #channel = "#infinite-stratos"
-channel = "#ifninite-stratos"
+channel = "#infinite-stratos"
 #channel = "#ujelly" #Test channel. Comment above before uncommenting this
 con = "irc.rizon.net"
 nick = "Jellybot"
