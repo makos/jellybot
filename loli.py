@@ -13,7 +13,7 @@ def open():
     #Open database
     db = sqlite3.connect('lolis.db')
 
-    #Create cursor
+    #Create cursors
     cur = db.cursor()
 
 def save():

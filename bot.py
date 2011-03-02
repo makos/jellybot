@@ -6,22 +6,23 @@ irclib.DEBUG=False
 import re
 import random
 import time
+
+#Plugins
 import loli
+import checkem
+import eightball
+import google
 
 # Feel free to add new ops
 ops = {"UbrFrG":"South Africa", "makos":"Poland", "fatapaca":"Latvia", "Feath":"Canada"}
+
 # Chosen Ones
 mods = ("makos", "fatapaca")
-doubles = ('00', 11, 22, 33, 44, 55, 66, 77, 88, 99)
-# For !checkem
-dict = ("{0}. Pffft, try harder next time.", "Seriously? {0}? Are you kidding me?", "{0}. You suck.", "Keikaku doori. You failed. {0}.", "Only bakas get {0}.")
+
 # Add more stuff. kthxbai
 tlnote = ("TL Note: Yuki means snow.", "TL Note: Kuroneko means black cat.", \
           "TL Note: keikaku means plan.", "TL Note: yome means bride, here it is implied as wife.", \
           "TL Note: Hourou Musuko means What The Fuck Am I Watching.")
-# For !eightball
-eightball = ("Yes, {}.", "No, {}.", "Who knows?", "Maybe, {}.", "How should I know?", "That's very possible, {}.", "How about no.", "42.", \
-             "No, you piece of shit.", "{} no ecchi!")
 
 # any idea how to make this display in multiple lines?
 # """TL Note: Schneizel just made an illegal move in chess, so it doesn't make sense
@@ -44,8 +45,8 @@ eightball = ("Yes, {}.", "No, {}.", "Who knows?", "Maybe, {}.", "How should I kn
 
 
 # Global Settings
-channel = "#infinite-stratos"
-#channel = "#ujelly" #Test channel
+#channel = "#infinite-stratos"
+channel = "#ujelly" #Test channel
 con = "irc.rizon.net"
 nick = "Jollybot"
 user = "u jelly"
@@ -68,28 +69,33 @@ class Bot:
             self.server.privmsg(user, self.help(user))
             print arg.source(), ":", args
         elif "!checkem" in args:
-            self.checkem(user)
-            print arg.source(), ":", args
+            output = checkem.checkem( user )
+
+            if output:
+                self.server.privmsg(channel, output )
+
         elif "!tlnote" in args:
             self.tlnote()
             print arg.source(), ":", args
         elif re.search("!eightball", str(args)):
-            self.eightball(user)
+            self.server.privmsg( channel, eightball.eightball( user ) )
         elif re.search( "!loli", str(args) ):
-			#Open db
-			loli.open()
+            #Open db
+            loli.open()
 
-			#Create db if needed
-			loli.create()
+            #Create db if needed
+            loli.create()
 
-			#Execute command and return output
-			output = loli.loli( user, time.time() )
+            #Execute command and return output
+            output = loli.loli( user, time.time() )
 
-			if output:
-				self.server.privmsg(channel, output )
+            if output:
+                self.server.privmsg(channel, output )
 
-			#Close db
-			loli.save()
+            #Close db
+            loli.save()
+        elif re.search( "!google", str(args) ):
+            self.server.privmsg( channel, google.search( user, args ) )
         else:
             print arg.source(), ":", args
 
@@ -149,41 +155,10 @@ class Bot:
         self.server.ctcp('action', channel, arg)
         print "CTCP ACTION:", arg
 
-    def checkem(self, user):
-        """Check those dubs."""
-
-        number = random.randint(00, 99)
-
-        global channel, last_usage
-
-        #Wait five seconds before actually doing anything
-        if int(time.time()) - last_usage < 5:
-			if random.randint(0, 3) == 0:
-				self.server.privmsg(channel, "Calm down, bro.")
-				return
-
-        if number in doubles:
-			self.server.privmsg(channel, "CHECK EM! {0} rolled {1}".format(user, number))
-
-        elif random.randint(0, 2) == 1:
-            self.server.privmsg(channel, random.choice(dict).format(number))
-            return
-            #self.server.kick(channel, user)
-            #print "KICKED:", user
-
-		#Log last usage time
-        last_usage = int(time.time())
-
-
     def tlnote(self):
         """TL Note: docstring is what you are reading now."""
 
         self.server.privmsg(channel, random.choice(tlnote))
-
-    def eightball(self, user):
-        """See the future."""
-
-        self.server.privmsg(channel, random.choice(eightball).format(user))
 
     def connect(self):
         """Main function, connecting to server and channel and setting up event handlers."""
