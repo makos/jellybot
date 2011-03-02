@@ -50,6 +50,7 @@ class Bot:
 
     irc = irclib.IRC()
     server = irc.server()
+    public = 0
 
     def callback(self, handle, arg):
         """Standard callback function. Defines default commands to be used by typing them into chat."""
@@ -96,6 +97,8 @@ class Bot:
             self.server.privmsg(channel, "What are we gonna do on the bed?")
         else:
             chat.parse(user, str(args).strip("[']"))
+            if self.public == 1:
+                self.server.privmsg(channel, chat.parse(user, str(args).strip("[']")))
             return
 
     def help(self, user):
@@ -146,6 +149,13 @@ class Bot:
                 self.help(user)
             elif re.search(".nick", str(args)):
                 self.server.nick(str(args).split()[1].strip("[']"))
+            elif ".pubchat" in args:
+                if self.public == 0:
+                    self.public = 1
+                    self.server.privmsg(user, "Public conversation mode is now on.")
+                else:
+                    self.public = 0
+                    self.server.privmsg(user, "Public conversation mode is now off.")
             else:
                 self.server.privmsg( user, chat.parse( user, str(args).strip("[']") ) )
         else:
