@@ -95,6 +95,10 @@ class Bot:
                 #self.server.privmsg(channel, gelbooru.open())
             #else:
             self.server.privmsg(channel, gelbooru.open(str(str(args).strip("[']")[9:])))
+        elif re.search("^POMF =3", str(args).strip("[']")):
+            self.server.privmsg(channel, "Wah!")
+        elif re.search("^Wah!", str(args).strip("[']")):
+            self.server.privmsg(channel, "What are we gonna do on the bed?")
         else:
             print arg.source(), ":", args
 
