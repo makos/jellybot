@@ -13,7 +13,10 @@ def open(*what):
     imgs = str(images).split()
     link = re.search("'id.*", str(imgs))
     if imgs:
-        img = link.group().split()
+        try:
+            img = link.group().split()
+        except AttributeError:
+            return "No such tag."
     if len(repr(what).strip("(',)")) > 0:
         return "Latest image under tag {}: http://gelbooru.com/index.php?page=post&s=view&id={}".format(str(what).strip("'(),"), img[0].strip("id=\"\\',"))
     else:
