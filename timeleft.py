@@ -18,7 +18,10 @@ def formats( seconds ):
 
     if days == 0:
         if hours == 0:
-            return "%02d:%02d" % ( minutes, seconds )
+            if minutes == 0:
+                return "%02d seconds" % ( seconds )
+
+            return "%02d minutes and %02d" % ( minutes, seconds )
 
         return "%02d hours %02d minutes %02d seconds" % ( hours, minutes, seconds )
 
