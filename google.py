@@ -25,8 +25,11 @@ def search( user, what ):
         print i['title'] + ": " + i['url']
     """
 
-    #Return first hit
-    return "{}, your search returned: {} @ {}".format( user, results[0]['title'],  results[0]['url'])
+    if results:
+        return "{}, your search returned: {} @ {}".format( user, results[0]['title'],  results[0]['url'])
+
+    return "{}, I couldn't find anything about {}".format( user, str(what) )
 
 if __name__ == "__main__":
     print search("fatapaca", "lolis")
+git pul
