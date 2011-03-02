@@ -11,14 +11,15 @@ def open(*what):
     content = urllib.urlopen(url)
     images = content.readlines()
     imgs = str(images).split()
-    link = re.search("http.*", str(imgs))
-    if link:
+    link = re.search("'id.*", str(imgs))
+    if imgs:
         img = link.group().split()
     if len(repr(what).strip("(',)")) > 0:
-        return "Latest image under tag {}: {}".format(str(what).strip("'(),"), img[0].strip("\",'"))
+        return "Latest image under tag {}: http://gelbooru.com/index.php?page=post&s=view&id={}".format(str(what).strip("'(),"), img[0].strip("id=\"\\',"))
     else:
-        return "Latest image under tag infinite_stratos: {}".format(img[0].strip("\",'"))
-       #image.split()
+        return "Latest image under tag infinite_stratos: http://gelbooru.com/index.php?page=post&s=view&id={}".format(img[0].strip("id=\"\\',"))
+        
+        #image.split()
         #link = re.search("http.*", image)
         #if link:
             #img = link.group().split()
