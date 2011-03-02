@@ -5,7 +5,7 @@ import irclib, re, random, time
 irclib.DEBUG=False
 
 #Plugins
-import loli, checkem, eightball, google, gelbooru
+import loli, checkem, eightball, google, gelbooru, timeleft
 
 # Feel free to add new ops
 ops = {"UbrFrG":"South Africa", "makos":"Poland", "fatapaca":"Latvia", "Feath":"Canada"}
@@ -40,10 +40,9 @@ tlnote = ("TL Note: Yuki means snow.", "TL Note: Kuroneko means black cat.", \
 
 # Global Settings
 #channel = "#infinite-stratos"
-channel = "#infinite-stratos"
-#channel = "#ujelly" #Test channel. Comment above before uncommenting this
+channel = "#ujelly" #Test channel. Comment above before uncommenting this
 con = "irc.rizon.net"
-nick = "Jellybot"
+nick = "Jollybot"
 user = "u jelly"
 port = 6667
 
@@ -96,6 +95,8 @@ class Bot:
                 #self.server.privmsg(channel, gelbooru.open())
             #else:
             self.server.privmsg(channel, gelbooru.open(str(str(args).strip("[']")[9:])))
+        elif re.search( "!timeleft", str(args) ):
+			self.server.privmsg(channel, timeleft.timeleft( user ))
         elif re.search("^POMF =3", str(args).strip("[']")):
             self.server.privmsg(channel, "Wah!")
         elif re.search("^Wah!", str(args).strip("[']")):
