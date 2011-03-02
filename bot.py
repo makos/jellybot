@@ -2,7 +2,7 @@
 #-*- coding: utf-8 -*-
 
 import irclib, re, random, time
-irclib.DEBUG=False
+irclib.DEBUG=False # True for shitload of verbose text
 
 #Plugins
 import loli, checkem, eightball, google, gelbooru, timeleft
@@ -41,13 +41,10 @@ tlnote = ("TL Note: Yuki means snow.", "TL Note: Kuroneko means black cat.", \
 # Global Settings
 #channel = "#infinite-stratos"
 channel = "#ujelly" #Test channel. Comment above before uncommenting this
-con = "irc.rizon.net"
 nick = "Jollybot"
+con = "irc.rizon.net"
 user = "u jelly"
 port = 6667
-
-# For !checkem cooldown
-last_usage = 0
 
 class Bot:
 
@@ -71,9 +68,9 @@ class Bot:
         elif "!tlnote" in args:
             self.tlnote()
             print arg.source(), ":", args
-        elif re.search("!eightball", str(args)):
+        elif re.search("^!eightball", str(args).strip("[']")):              # To have the ^ wildcard working in regexp we need to strip args from ['] first.
             self.server.privmsg( channel, eightball.eightball( user ) )
-        elif re.search( "!loli", str(args) ):
+        elif re.search( "^!loli", str(args).strip("[']")):
             #Open db
             loli.open()
 
@@ -88,14 +85,11 @@ class Bot:
 
             #Close db
             loli.save()
-        elif re.search( "!google", str(args) ):
+        elif re.search( "^!google", str(args).strip("[']")):
             self.server.privmsg( channel, google.search( user, str(args).strip("[']")[7:] ) )
-        elif re.search("!gelbooru", str(args)):
-            #if len(args) < 13:
-                #self.server.privmsg(channel, gelbooru.open())
-            #else:
+        elif re.search("^!gelbooru", str(args).strip("[']")):
             self.server.privmsg(channel, gelbooru.open(str(str(args).strip("[']")[9:])))
-        elif re.search( "!timeleft", str(args) ):
+        elif re.search( "^!timeleft", str(args).strip("[']") ):
 			self.server.privmsg(channel, timeleft.timeleft( user ))
         elif re.search("^POMF =3", str(args).strip("[']")):
             self.server.privmsg(channel, "Wah!")
@@ -111,6 +105,9 @@ class Bot:
         self.server.privmsg(user, "* !help - this dialog")
         self.server.privmsg(user, "* !checkem - check 'em")
         self.server.privmsg(user, "* !tlnote - themoaryouknow")
+        self.server.privmsg(user, "* !google - google search")
+        self.server.privmsg(user, "* !gelbooru [tags] - gelbooru search for latest picture under given tag, if no tag given it defaults to infinite_stratos")
+        self.server.privmsg(user, "* !loli - catch 'em all")
 
     def ctcp(self, connection, event):
         """Sends CTCP answer to VERSION query."""

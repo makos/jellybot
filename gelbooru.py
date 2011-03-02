@@ -18,10 +18,3 @@ def open(*what):
         return "Latest image under tag {}: http://gelbooru.com/index.php?page=post&s=view&id={}".format(str(what).strip("'(),"), img[0].strip("id=\"\\',"))
     else:
         return "Latest image under tag infinite_stratos: http://gelbooru.com/index.php?page=post&s=view&id={}".format(img[0].strip("id=\"\\',"))
-        
-        #image.split()
-        #link = re.search("http.*", image)
-        #if link:
-            #img = link.group().split()
-        #print img[0].strip("\"")
-        
