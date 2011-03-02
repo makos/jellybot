@@ -1,17 +1,11 @@
 #!/usr/bin/env python2
 #-*- coding: utf-8 -*-
 
-import irclib
+import irclib, re, random, time
 irclib.DEBUG=False
-import re
-import random
-import time
 
 #Plugins
-import loli
-import checkem
-import eightball
-import google
+import loli, checkem, eightball, google, gelbooru
 
 # Feel free to add new ops
 ops = {"UbrFrG":"South Africa", "makos":"Poland", "fatapaca":"Latvia", "Feath":"Canada"}
@@ -46,7 +40,7 @@ tlnote = ("TL Note: Yuki means snow.", "TL Note: Kuroneko means black cat.", \
 
 # Global Settings
 #channel = "#infinite-stratos"
-channel = "#ujelly" #Test channel
+channel = "#infinite-stratos" #Test channel
 con = "irc.rizon.net"
 nick = "Jellybot"
 user = "u jelly"
@@ -96,6 +90,11 @@ class Bot:
             loli.save()
         elif re.search( "!google", str(args) ):
             self.server.privmsg( channel, google.search( user, str(args).strip("[']")[7:] ) )
+        elif re.search("!gelbooru", str(args)):
+            #if len(args) < 13:
+                #self.server.privmsg(channel, gelbooru.open())
+            #else:
+            self.server.privmsg(channel, gelbooru.open(str(str(args).strip("[']")[9:])))
         else:
             print arg.source(), ":", args
 
