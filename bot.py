@@ -95,7 +95,7 @@ class Bot:
         elif re.search("^Wah!", str(args).strip("[']")):
             self.server.privmsg(channel, "What are we gonna do on the bed?")
         else:
-            #print arg.source(), ":", args
+            chat.parse(user, str(args).strip("[']"))
             return
 
     def help(self, user):
