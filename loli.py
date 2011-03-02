@@ -64,11 +64,11 @@ def loli( user, time):
 
     #Interval between command in seconds
     #6 hours should be sane interval
-    interval = 5 #Keeping it at 5 seconds for testing purposes
+    interval = 3600 #Keeping it at 5 seconds for testing purposes
 
     #Min and Max # of lolis you can get
     min_lolis = 0
-    max_lolis = 10
+    max_lolis = 15
 
     #Save mode:
     #   0: Adds new row for user
@@ -106,7 +106,16 @@ def loli( user, time):
     lolis += newlolis
 
     #Announce results
-    output = "{} got, {} lolis! And has total of {} lolis!".format( user, newlolis, lolis)
+    if newlolis == 0:
+        output = "Fukou da. {} didn't get any lolis this time, but {} still has {} lolis left.".format( user, user, lolis )
+    elif newlolis == 1:
+        output = "{} got one more loli, {} now has {} lolis in total!".format( user, user, lolis)
+    elif newlolis > 10:
+        output = "{} is SUPER PEDO and got {} lolis and {} already has {}".format( user, newlolis, user, lolis )
+    elif newlolis > 5:
+        output = "{} was lucky this time, he escaped paryvan with {} lolis and bitches still don't know 'bout his {} lolis.". format( user, newlolis, lolis )
+    else:
+        output = "{} got, {} lolis! And has total of {} lolis!".format( user, newlolis, lolis)
 
     print output;
     #Save data
