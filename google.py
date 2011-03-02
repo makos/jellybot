@@ -28,7 +28,7 @@ def search( user, what ):
     if results:
         return "{}, your search returned: {} @ {}".format( user, results[0]['title'],  results[0]['url'])
 
-    return "{}, I couldn't find anything about {}".format( user, str(what) )
+    return "{}, I couldn't find anything about {}".format( user, str(what)
 
 if __name__ == "__main__":
     print search("fatapaca", "lolis")
