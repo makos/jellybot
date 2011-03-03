@@ -98,7 +98,12 @@ class Bot:
         else:
             chat.parse(user, str(args).strip("[']"))
             if self.public == 1:
-                self.server.privmsg(channel, chat.parse(user, str(args).strip("[']")))
+				#Bot is mentioned
+				#if re.search( "Jellybot", str.strip("[']") ):
+				self.server.privmsg(channel, chat.parse(user, str(args).strip("[']")))
+            else:
+				#Just learn
+				chat.parse( user, str(args).strip("[']") ) #For some reason this is called twice
             return
 
     def help(self, user):

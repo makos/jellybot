@@ -14,11 +14,13 @@ def reply( text ):
 
 def parse( user, text ):
 
-    print "Learning:", text
+    msg = text.strip('\"')
 
-    learn( text )
+    print "Learning:", msg
 
-    return "{}: {}".format( user, reply( text ) )
+    learn( msg )
+
+    return "{}: {}".format( user, reply( msg ) )
 
 if __name__ == '__main__':
     print parse( "Hello" )
