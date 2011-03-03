@@ -6,22 +6,38 @@ from cobe.brain import Brain
 
 brain = Brain("jellybot.brain")
 
-def learn( text ):
+def _learn( text ):
     return brain.learn(text)
 
-def reply( text ):
+def _reply( text ):
     return brain.reply(text).encode('utf-8')
 
-def parse( user, text ):
+def parse( user, msg, nickname, reply = True, adressed = True ):
 
-    msg = text.strip('\"')
+    nick = ""
+    text = msg
 
-    print "Learning:", msg
+    if msg == None:
+        return
 
-    learn( msg )
+    m = re.match( r"^(?P<nick>\S+)[,:] ?(?P<body>.*)", msg.strip("\"") )
 
-    return "{}: {}".format( user, reply( msg ) )
+    if m:
+        nick = m.group( "nick" ) #Adress
+        text = m.group( "body" ) #Actual text
 
-if __name__ == '__main__':
-    print parse( "Hello" )
-    print parse( "My name is Jellybot" )
+    #Learn text
+    if text:
+        _learn( text )
+    else:
+        return _learn( msg )
+
+    if adressed == False:
+        return "{}: {}".format( user, _reply( text ) )
+    else:
+        if nick == nickname:
+            if reply:
+                print "[chat] --> Replying to", user, "M = [", text, "]"
+                return "{}: {}".format( user, _reply( text ) )
+
+    return

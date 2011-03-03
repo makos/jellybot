@@ -39,8 +39,8 @@ tlnote = ("TL Note: Yuki means snow.", "TL Note: Kuroneko means black cat.", \
 
 
 # Global Settings
-#channel = "#infinite-stratos"
-channel = "#ujelly" #Test channel. Comment above before uncommenting this
+channel = "#infinite-stratos"
+#channel = "#ujelly" #Test channel. Comment above before uncommenting this
 nick = "Jellybot"
 con = "irc.rizon.net"
 user = "u jelly"
@@ -96,14 +96,17 @@ class Bot:
         elif re.search("^Wah!", str(args).strip("[']")):
             self.server.privmsg(channel, "What are we gonna do on the bed?")
         else:
-            chat.parse(user, str(args).strip("[']"))
-            if self.public == 1:
-				#Bot is mentioned
-				#if re.search( "Jellybot", str.strip("[']") ):
-				self.server.privmsg(channel, chat.parse(user, str(args).strip("[']")))
-            else:
-				#Just learn
-				chat.parse( user, str(args).strip("[']") ) #For some reason this is called twice
+
+            mentioned   = 0
+            public      = self.public
+            nickname    = self.server.nickname
+            message     = str(args).strip( "[']\"" )
+
+            output = chat.parse( user, message, nickname, public )
+
+            if output != None:
+                self.server.privmsg( channel, output )
+
             return
 
     def help(self, user):
@@ -144,6 +147,7 @@ class Bot:
         if user in mods or re.search("desu\.wa", irclib.nm_to_h(arg.source())) or re.search("is\.my\.husbando", irclib.nm_to_h(arg.source())):
             if ".quit" in args:
                 self.server.close()
+                sys.exit()
             elif re.search(".say", str(args)):
                 temp = str(args)
                 if re.search("/me", temp):
@@ -162,10 +166,12 @@ class Bot:
                     self.public = 0
                     self.server.privmsg(user, "Public conversation mode is now off.")
             else:
-                self.server.privmsg( user, chat.parse( user, str(args).strip("[']") ) )
+                output = chat.parse( user, str(args).strip("[']"), self.server.nickname, True, False )
+                if output != None:
+					self.server.privmsg( user, output )
         else:
-			self.server.privmsg(user, "You are not allowed to use mod commands.")
-			print "PRIVMSG from", arg.source(), ":", args
+            self.server.privmsg(user, "You are not allowed to use mod commands.")
+            print "PRIVMSG from", arg.source(), ":", args
 
     def action(self, arg):
         """Prints /me action in given channel."""

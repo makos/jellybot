@@ -113,7 +113,7 @@ def loli( user, time):
     elif newlolis > 10:
         output = "{} is SUPER PEDO and got {} lolis and {} already has {}".format( user, newlolis, user, lolis )
     elif newlolis > 5:
-        output = "{} was lucky this time, he escaped paryvan with {} lolis and bitches still don't know 'bout his {} lolis.". format( user, newlolis, lolis )
+        output = "{} was lucky this time, he escaped partyvan with {} lolis and bitches still don't know 'bout his {} lolis.". format( user, newlolis, lolis )
     else:
         output = "{} got, {} lolis! And has total of {} lolis!".format( user, newlolis, lolis)
 
