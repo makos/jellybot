@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 #-*- coding: utf-8 -*-
 
-import irclib, re, random, time
+import irclib, re, random, time, sys
 irclib.DEBUG=False # True for shitload of verbose text
 
 #Plugins
@@ -39,8 +39,8 @@ tlnote = ("TL Note: Yuki means snow.", "TL Note: Kuroneko means black cat.", \
 
 
 # Global Settings
-channel = "#infinite-stratos"
-#channel = "#ujelly" #Test channel. Comment above before uncommenting this
+#channel = "#infinite-stratos"
+channel = "#ujelly" #Test channel. Comment above before uncommenting this
 nick = "Jellybot"
 con = "irc.rizon.net"
 user = "u jelly"

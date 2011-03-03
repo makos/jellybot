@@ -20,7 +20,7 @@ def parse( user, msg, nickname, reply = True, adressed = True ):
     if msg == None:
         return
 
-    m = re.match( r"^(?P<nick>\S+)[,:] ?(?P<body>.*)", msg.strip("\"") )
+    m = re.match( r"^(?P<nick>\S+)[,:] ?(?P<body>.*)", msg.strip("\"").replace("\"", "") )
 
     if m:
         nick = m.group( "nick" ) #Adress
@@ -38,6 +38,6 @@ def parse( user, msg, nickname, reply = True, adressed = True ):
         if nick == nickname:
             if reply:
                 print "[chat] --> Replying to", user, "M = [", text, "]"
-                return "{}: {}".format( user, _reply( text ) )
+                return "{}: {}".format( user, _reply( text ).replace("\"", "") )
 
     return
