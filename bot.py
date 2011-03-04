@@ -50,13 +50,14 @@ class Bot:
 
     irc = irclib.IRC()
     server = irc.server()
-    public = 0
+    public = 1
 
     def callback(self, handle, arg):
         """Standard callback function. Defines default commands to be used by typing them into chat."""
 
         user = irclib.nm_to_n(arg.source())
         args = arg.arguments()
+        chan = arg.target()
 
         if "!help" in args:
             self.server.privmsg(user, self.help(user))
@@ -64,7 +65,7 @@ class Bot:
             output = checkem.checkem( user )
 
             if output:
-                self.server.privmsg(channel, output )
+                self.server.privmsg(chan, output )
 
         elif "!tlnote" in args:
             self.tlnote()
@@ -81,20 +82,20 @@ class Bot:
             output = loli.loli( user, time.time() )
 
             if output:
-                self.server.privmsg(channel, output )
+                self.server.privmsg(chan, output )
 
             #Close db
             loli.save()
         elif re.search( "^!google", str(args).strip("[']")):
-            self.server.privmsg( channel, google.search( user, str(args).strip("[']")[7:] ) )
+            self.server.privmsg( chan, google.search( user, str(args).strip("[']")[7:] ) )
         elif re.search("^!gelbooru", str(args).strip("[']")):
-            self.server.privmsg(channel, gelbooru.open(str(str(args).strip("[']")[9:])))
+            self.server.privmsg(chan, gelbooru.open(str(str(args).strip("[']")[9:])))
         elif re.search( "^!timeleft", str(args).strip("[']") ):
-            self.server.privmsg(channel, timeleft.timeleft( user ))
+            self.server.privmsg(chan, timeleft.timeleft( user ))
         elif re.search("^POMF =3", str(args).strip("[']")):
-            self.server.privmsg(channel, "Wah!")
+            self.server.privmsg(chan, "Wah!")
         elif re.search("^Wah!", str(args).strip("[']")):
-            self.server.privmsg(channel, "What are we gonna do on the bed?")
+            self.server.privmsg(chan, "What are we gonna do on the bed?")
         else:
 
             mentioned   = 0
@@ -105,7 +106,7 @@ class Bot:
             output = chat.parse( user, message, nickname, public )
 
             if output != None:
-                self.server.privmsg( channel, output )
+                self.server.privmsg( chan, output )
 
             return
 
