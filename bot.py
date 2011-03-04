@@ -42,7 +42,7 @@ tlnote = ("TL Note: Yuki means snow.", "TL Note: Kuroneko means black cat.", \
 
 #Channels
 channel  = "#infinite-stratos" #Defalt output channel for some commands, make sure to also include it in channels list.
-channels = [ "#infinite-stratos", "#ujelly" ]
+channels = [ "#infinite-stratos", "#ujelly", "#madoka", "#k-on-game" ]
 
 nick = "Jellybot"
 con = "irc.rizon.net"
@@ -71,9 +71,11 @@ class Bot:
                 self.server.privmsg(chan, output )
 
         elif "!tlnote" in args:
-            self.tlnote()
+            self.server.privmsg(chan, self.tlnote())
+
         elif re.search("^!eightball", str(args).strip("[']")):              # To have the ^ wildcard working in regexp we need to strip args from ['] first.
-            self.server.privmsg( channel, eightball.eightball( user ) )
+            self.server.privmsg( chan, eightball.eightball( user ) )
+
         elif re.search( "^!loli", str(args).strip("[']")):
             #Open db
             loli.open()
@@ -221,7 +223,7 @@ class Bot:
     def tlnote(self):
         """TL Note: docstring is what you are reading now."""
 
-        self.server.privmsg(channel, random.choice(tlnote))
+        return random.choice(tlnote)
 
     def connect(self):
         """Main function, connecting to server and channel and setting up event handlers."""
@@ -232,7 +234,7 @@ class Bot:
         self.server.user(user, user)
 
         for chan in channels:
-            self.server.join(channel)
+            self.server.join(chan)
 
         self.server.add_global_handler("pubmsg", self.callback)
         self.server.add_global_handler("privmsg", self.modcmd)
