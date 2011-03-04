@@ -39,8 +39,11 @@ tlnote = ("TL Note: Yuki means snow.", "TL Note: Kuroneko means black cat.", \
 
 
 # Global Settings
-channel = "#infinite-stratos"
-#channel = "#ujelly" #Test channel. Comment above before uncommenting this
+
+#Channels
+channel  = "#infinite-stratos" #Defalt output channel for some commands, make sure to also include it in channels list.
+channels = [ "#infinite-stratos", "#ujelly" ]
+
 nick = "Jellybot"
 con = "irc.rizon.net"
 user = "u jelly"
@@ -131,9 +134,8 @@ class Bot:
     def join(self, handle, arg):
         """Callback function greeting users joining the channel."""
 
-        global channel
         if irclib.nm_to_n(arg.source()) in ops.keys():
-            self.server.privmsg(channel, "{0}, the representative candidate from {1} is here!".format(irclib.nm_to_n(arg.source()), ops.get(irclib.nm_to_n(arg.source()))))
+            self.server.privmsg( arg.target(), "{0}, the representative candidate from {1} is here!".format(irclib.nm_to_n(arg.source()), ops.get(irclib.nm_to_n(arg.source()))))
             print "JOIN: ", arg.source()
         else:
             pass
@@ -224,10 +226,14 @@ class Bot:
     def connect(self):
         """Main function, connecting to server and channel and setting up event handlers."""
 
-        global con, user, channel, nick, port
+        global con, user, channels, nick, port
+
         self.server.connect(con, port, nick)
         self.server.user(user, user)
-        self.server.join(channel)
+
+        for chan in channels:
+            self.server.join(channel)
+
         self.server.add_global_handler("pubmsg", self.callback)
         self.server.add_global_handler("privmsg", self.modcmd)
         self.server.add_global_handler("ctcp", self.ctcp)
