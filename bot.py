@@ -168,7 +168,6 @@ class Bot:
 
             print arg
             print args
-            print handle
 
             if ".quit" in args:
                 self.server.close()
