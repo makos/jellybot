@@ -30,14 +30,14 @@ def parse( user, msg, nickname, reply = True, adressed = True ):
     if text:
         _learn( text )
     else:
-        return _learn( msg )
+        return _learn( msg.strip("\"") )
 
     if adressed == False:
         return "{}: {}".format( user, _reply( text ) )
     else:
         if nick == nickname:
             if reply:
-                print "[chat] --> Replying to", user, "M = [", text, "]"
+                #print "[chat] --> Replying to", user, "M = [", text, "]"
                 return "{}: {}".format( user, _reply( text ).replace("\"", "") )
 
     return

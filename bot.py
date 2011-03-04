@@ -39,8 +39,8 @@ tlnote = ("TL Note: Yuki means snow.", "TL Note: Kuroneko means black cat.", \
 
 
 # Global Settings
-#channel = "#infinite-stratos"
-channel = "#ujelly" #Test channel. Comment above before uncommenting this
+channel = "#infinite-stratos"
+#channel = "#ujelly" #Test channel. Comment above before uncommenting this
 nick = "Jellybot"
 con = "irc.rizon.net"
 user = "u jelly"
@@ -137,6 +137,26 @@ class Bot:
         else:
             pass
 
+    def invite(self, handle, arg):
+        chan = arg.arguments()[0]
+
+        self.server.join( chan )
+
+        print "Joining", chan, "because", arg.source(), "invited me."
+
+    def kick(self, handle, arg):
+        chan    = arg.target()
+        kicker  = arg.source()
+        target  = arg.arguments()[0]
+
+        print "KICK: ", kicker, "kicked", target, "in", chan
+
+        if target == self.server.nickname:
+            print "Rejoining", chan
+            self.server.join( chan )
+
+        return
+
     def modcmd(self, handle, arg):
         """Callback function for moderator commands (quit etc.)"""
 
@@ -145,6 +165,11 @@ class Bot:
         args = arg.arguments()
         user = irclib.nm_to_n(arg.source())
         if user in mods or re.search("desu\.wa", irclib.nm_to_h(arg.source())) or re.search("is\.my\.husbando", irclib.nm_to_h(arg.source())):
+
+            print arg
+            print args
+            print handle
+
             if ".quit" in args:
                 self.server.close()
                 sys.exit()
@@ -165,13 +190,26 @@ class Bot:
                 else:
                     self.public = 0
                     self.server.privmsg(user, "Public conversation mode is now off.")
+            elif re.search(".join", str(args)):
+                    chan = str(args).strip("[']")[6:]
+                    print "Joing channel", chan
+                    self.server.join( chan )
+            elif re.search(".part", str(args)):
+                    chan = str(args).strip("[']")[6:]
+                    print "Leaving channel", chan
+                    self.server.part( chan )
             else:
                 output = chat.parse( user, str(args).strip("[']"), self.server.nickname, True, False )
+
                 if output != None:
-					self.server.privmsg( user, output )
+                    self.server.privmsg( user, output )
         else:
-            self.server.privmsg(user, "You are not allowed to use mod commands.")
-            print "PRIVMSG from", arg.source(), ":", args
+            print "PRIVMSG from", arg.source(), ":", args.strip("[']")
+            output = chat.parse( user, str(args).strip("[']"), self.server.nickname, True, False )
+
+            if output != None:
+                print "->> REPLY:", output
+                self.server.privmsg( user, output )
 
     def action(self, arg):
         """Prints /me action in given channel."""
@@ -196,6 +234,8 @@ class Bot:
         self.server.add_global_handler("privmsg", self.modcmd)
         self.server.add_global_handler("ctcp", self.ctcp)
         self.server.add_global_handler("join", self.join)
+        self.server.add_global_handler("kick", self.kick)
+        self.server.add_global_handler("invite", self.invite)
         self.irc.process_forever()
 
 
