@@ -164,10 +164,8 @@ class Bot:
         user = irclib.nm_to_n(arg.source())
         args = arg.arguments()
         user = irclib.nm_to_n(arg.source())
-        if user in mods or re.search("desu\.wa", irclib.nm_to_h(arg.source())) or re.search("is\.my\.husbando", irclib.nm_to_h(arg.source())):
 
-            print arg
-            print args
+        if user in mods or re.search("desu\.wa", irclib.nm_to_h(arg.source())) or re.search("is\.my\.husbando", irclib.nm_to_h(arg.source())):
 
             if ".quit" in args:
                 self.server.close()
