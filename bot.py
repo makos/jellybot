@@ -42,9 +42,10 @@ tlnote = ("TL Note: Yuki means snow.", "TL Note: Kuroneko means black cat.", \
 
 #Channels
 channel  = "#infinite-stratos" #Defalt output channel for some commands, make sure to also include it in channels list.
-channels = [ "#infinite-stratos", "#ujelly", "#madoka", "#k-on-game" ]
+#channels = [ "#infinite-stratos", "#ujelly", "#madoka", "#k-on-game" ]
+channels = [ "#ujelly" ]
 
-nick = "Jellybot"
+nick = "Jollybot"
 con = "irc.rizon.net"
 user = "u jelly"
 port = 6667
@@ -54,6 +55,8 @@ class Bot:
     irc = irclib.IRC()
     server = irc.server()
     public = 1
+
+    pomfdown = int( time.time() )
 
     def callback(self, handle, arg):
         """Standard callback function. Defines default commands to be used by typing them into chat."""
@@ -91,6 +94,24 @@ class Bot:
 
             #Close db
             loli.save()
+        elif re.search( "^!steal", str(args).strip("[']")):
+
+            target = str(args).strip("[']")[7:]
+            print user, "is attempting to steal lolis from", target
+
+            #Open db
+            loli.open()
+            loli.create()
+
+            #Execute command and return output
+            output = loli.steal( user, target )
+
+            if output:
+                self.server.privmsg(chan, output )
+
+            #Close db
+            loli.save()
+
         elif re.search( "^!google", str(args).strip("[']")):
             self.server.privmsg( chan, google.search( user, str(args).strip("[']")[7:] ) )
         elif re.search("^!gelbooru", str(args).strip("[']")):
@@ -98,9 +119,21 @@ class Bot:
         elif re.search( "^!timeleft", str(args).strip("[']") ):
             self.server.privmsg(chan, timeleft.timeleft( user ))
         elif re.search("^POMF =3", str(args).strip("[']")):
-            self.server.privmsg(chan, "Wah!")
+
+            #Stop spamming that shit
+            if ( int(time.time()) - self.pomfdown ) > 5:
+                self.server.privmsg(chan, "Wah!")
+
+                self.pomfdown = int(time.time())
+
         elif re.search("^Wah!", str(args).strip("[']")):
-            self.server.privmsg(chan, "What are we gonna do on the bed?")
+
+            #Stop spamming that shit
+            if ( int(time.time()) - self.pomfdown ) > 5:
+                self.server.privmsg(chan, "What are we gonna do on the bed?")
+
+                self.pomfdown = int(time.time())
+
         else:
 
             mentioned   = 0

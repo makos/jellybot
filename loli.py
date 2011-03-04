@@ -56,7 +56,7 @@ def load( user ):
     cur.execute('SELECT lolis, time FROM lolis WHERE user="{}"'.format(user))
 
     #Fetch all data from our querie
-    data = cur.fetchall()
+    data = cur.fetchone()
 
     return data
 
@@ -84,20 +84,16 @@ def loli( user, time):
 
     #If we did load anything, assign values
     if( data ):
-        lolis = data[0][0]
-        last_usage = data[0][1]
+        lolis = data[0]
+        last_usage = data[1]
 
     #If timestamp is greater than zero, set mode to update data
     if ( last_usage > 0 ):
         mode = 1
 
-    #Little debug message
-    #print "--> Time: {} Save time: {} Difference: {}".format(time, last_usage, time - last_usage)
-
     #Check cooldown interval
     if( (int(time) - int(last_usage)) < interval ):
-        output = "Calm down, {}".format( user )
-        return output
+        return
 
     #Generate random number from min to max value
     newlolis = random.randint( min_lolis, max_lolis)
@@ -118,6 +114,7 @@ def loli( user, time):
         output = "{} got, {} lolis! And has total of {} lolis!".format( user, newlolis, lolis)
 
     print output;
+
     #Save data
     if mode == 0:
         #Insert new user
@@ -127,6 +124,74 @@ def loli( user, time):
         update( user, lolis)
 
     return output
+
+def steal( caller, target ):
+
+    if caller == target:
+        return
+
+    #Min and Max # of lolis you can get
+    min_lolis = 0
+    max_lolis = 10
+
+    #Save mode
+    c_mode = 0
+    t_mode = 0
+
+    #Loads user data
+    _caller = load( caller )
+    _target = load( target )
+
+    #Target has no lolis
+    if not _target:
+        return
+
+    #Interval between command in seconds
+    interval = 3600
+    thetime   = int(time.time())
+    timestamp = int(_caller[1])
+
+    #Check interval
+    if( ( thetime - timestamp ) < interval ):
+        return
+
+    #Generate random number from min to max value
+    loot = random.randint( min_lolis, max_lolis)
+
+    #If timestamp is greater than zero, set mode to update data
+    if ( _caller[1] > 0 ):
+        c_mode = 1
+
+    if ( _target[1] > 0 ):
+        t_mode = 1
+
+    # Don't let caller's loot exceed target's lolis
+    if ( loot > _target[0] ):
+        loot = _target[0]
+
+    # Add new lolis to callers stash
+    c_lolis = ( _caller[0] + loot )
+
+    # Remove lolis from target
+    t_lolis = ( _target[0] - loot )
+
+    #Save callers data
+    if c_mode == 0:
+        add( caller, c_lolis )
+    elif c_mode == 1:
+        update( caller, c_lolis)
+
+    if loot <= 0:
+        return "{} couldn't steal any lolis from {}".format( caller, target )
+
+    #Save targets data
+    if t_mode == 0:
+        #shouldn't happen
+        add( target, t_lolis )
+    elif t_mode == 1:
+        update( target, t_lolis)
+
+    return "{} stole {} lolis from {} and now has a total of {} lolis.".format( caller, loot, target, c_lolis )
 
 if __name__ == "__main__":
 
