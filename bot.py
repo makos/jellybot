@@ -277,15 +277,29 @@ class Bot:
                 if len(arg) < 2:
                     return
 
-                if re.search("/me", arg[1]):
+                if arg[1] in channels:
+                    if re.search("/me", arg[2]):
+                        if len(arg) < 4:
+                            return
 
-                    if len(arg) < 3:
-                        return
+                        self.server.ctcp('action', arg[1], " ".join( arg[3:] ) )
 
-                    self.action( " ".join( arg[2:] ) )
+                    else:
+                        if len(arg) < 3:
+                            return
+
+                        self.server.privmsg(arg[1], " ".join( arg[2:] ))
 
                 else:
-                    self.server.privmsg(channels[0], " ".join( arg[1:] ))
+                    if re.search("/me", arg[1]):
+
+                        if len(arg) < 3:
+                            return
+
+                        self.action( " ".join( arg[2:] ) )
+
+                    else:
+                        self.server.privmsg(channels[0], " ".join( arg[1:] ))
 
             elif "!help" in args:
                 self.help(user)
