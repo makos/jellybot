@@ -26,7 +26,7 @@ def search( user, what ):
     """
 
     if results:
-        return "{}, your search returned: {} @ {}".format( user, results[0]['title'],  results[0]['url'])
+        return "{}, your search returned: {} @ {}" .format( user, results[0]['title'].replace("<b>","").replace("</b>", ""),  results[0]['url'])
 
-    return "{}, I couldn't find anything about {}".format( user, str(what) )
+    return "{}, I couldn't find anything about {}".format( user, what )
 

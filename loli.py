@@ -60,7 +60,7 @@ def load( user ):
 
     return data
 
-def loli( user, time):
+def loli( user ):
 
     #Interval between command in seconds
     #6 hours should be sane interval
@@ -92,7 +92,7 @@ def loli( user, time):
         mode = 1
 
     #Check cooldown interval
-    if( (int(time) - int(last_usage)) < interval ):
+    if( (int(time.time()) - int(last_usage)) < interval ):
         return
 
     #Generate random number from min to max value
