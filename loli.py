@@ -6,6 +6,8 @@ import time
 
 global db, cur
 
+last_top = 0
+
 def open():
 
     global db, cur
@@ -111,7 +113,7 @@ def loli( user ):
     elif newlolis > 5:
         output = "{} was lucky this time, he escaped partyvan with {} lolis and bitches still don't know 'bout his {} lolis.". format( user, newlolis, lolis )
     else:
-        output = "{} got, {} lolis! And has total of {} lolis!".format( user, newlolis, lolis)
+        output = "{} got, {} lolis with total of {} lolis!".format( user, newlolis, lolis)
 
     print output;
 
@@ -193,14 +195,25 @@ def steal( caller, target ):
 
     return "{} stole {} lolis from {} and now has a total of {} lolis.".format( caller, loot, target, c_lolis )
 
-if __name__ == "__main__":
+def top( limit = 5, order = "DESC" ):
 
-    open()
+    cur.execute( 'SELECT user, lolis FROM lolis ORDER BY lolis {} LIMIT {}'.format( order, limit ) )
 
-    #Try to create table in database
-    create()
+    data = cur.fetchall()
 
-    loli("fatapaca", time.time())
-    loli("makos", time.time())
+    return data
 
-    save()
+def top5():
+
+    interval = 600
+    thetime  = int(time.time())
+
+    global last_top
+
+    if last_top:
+        if( ( thetime - last_top ) < interval ):
+            return
+
+    last_top = int(time.time())
+
+    return top( 5, "DESC" )

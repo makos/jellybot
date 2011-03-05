@@ -124,6 +124,19 @@ class Bot:
             #Close db
             loli.save()
 
+        elif re.search( "^!top5", args):
+            loli.open()
+            loli.create()
+
+            data = loli.top5()
+
+            if data:
+                _i = 1
+
+                for user in data:
+                    self.server.privmsg(chan, "#{} :: {} with {} lolis\n".format( _i, user[0], user[1], ) )
+                    _i += 1
+
         elif re.search( "^!google", args ):
 
             arguments = args.split(" ")
