@@ -57,6 +57,7 @@ class Bot:
     public = 1
 
     pomfdown = int( time.time() )
+    baww     = int( time.time() )
 
     def callback(self, handle, arg):
         """Standard callback function. Defines default commands to be used by typing them into chat."""
@@ -178,6 +179,13 @@ class Bot:
                 self.server.privmsg(chan, "What are we gonna do on the bed?")
 
                 self.pomfdown = int(time.time())
+
+        elif re.search("^;_;", args):
+
+            if ( int(time.time()) - self.baww ) > 5:
+                self.server.privmsg(chan, ";_;")
+
+                self.baww = int(time.time())
 
         else:
 
