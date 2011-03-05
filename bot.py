@@ -211,12 +211,24 @@ class Bot:
         self.server.privmsg(user, "* !gelbooru [tags] - gelbooru search for latest picture under given tag, if no tag given it defaults to infinite_stratos")
         self.server.privmsg(user, "* !loli - catch 'em all")
 
-    def ctcp(self, connection, event):
+    def ctcp(self, connection, arg):
         """Sends CTCP answer to VERSION query."""
+        chan    = arg.target()
+        caller  = irclib.nm_to_n(arg.source())
+        _args   = arg.arguments()
 
-        if event.arguments() [0].upper() == "VERSION":
-            connection.ctcp_reply(event.source().split('!')[0], "VERSION Python-IRCLib bot v0.2")
-            print "Responded to CTCP VERSION query from", event.source()
+        if len(_args) > 1:
+            if _args[0] == "ACTION":
+                _act = _args[1].split()
+                if len(_act) > 1:
+                    if _act[0] == "hugs":
+
+                        if _act[1] == self.server.nickname:
+                            self.server.ctcp('action', chan, "slaps {}".format(caller))
+
+        if arg.arguments() [0].upper() == "VERSION":
+            connection.ctcp_reply(arg.source().split('!')[0], "VERSION Python-IRCLib bot v0.2")
+            print "Responded to CTCP VERSION query from", arg.source()
 
     def join(self, handle, arg):
         """Callback function greeting users joining the channel."""
@@ -328,6 +340,7 @@ class Bot:
 
     def action(self, arg):
         """Prints /me action in given channel."""
+
 
         self.server.ctcp('action', channels[0], arg)
         print "CTCP ACTION:", arg
