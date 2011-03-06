@@ -42,7 +42,7 @@ tlnote = ("TL Note: Yuki means snow.", "TL Note: Kuroneko means black cat.", \
 
 #Channels
 #Defalt output channel for some commands is first channel
-channels = [ "#infinite-stratos", "#ujelly", "#madoka", "#k-on-game" ]
+channels = [ "#infinite-stratos", "#ujelly", "#madoka", "#k-on-game", "#koihime", "#pswg" ]
 #channels = [ "#ujelly" ]
 
 nick = "Jellybot"
@@ -194,6 +194,22 @@ class Bot:
         self.server.privmsg(chan, "UNTZ UNTZ UNTZ UTNZ UTNZ UNTZ")
 
         self.untz = int(time.time())
+
+    # NOW I'VE LOST IT
+    elif re.search("A NIGHT SKY FULL OF CRIES", args, re.IGNORECASE):
+      self.server.privmsg(chan, "HEARTS FILLED WITH LIES")
+    elif re.search("HEARTS FILLED WITH LIES", args, re.IGNORECASE):
+      self.server.privmsg(chan, "THE CONTRACT, IS IT WORTH THE PRICE?")
+    elif re.search("THE CONTRACT. IS IT WORTH THE PRICE.", args, re.IGNORECASE):
+      self.server.privmsg(chan, "A SOUL PLEDGED TO THE DARKNESS")
+    elif re.search("A SOUL PLEDGED TO THE DARKNESS", args, re.IGNORECASE):
+      self.server.privmsg(chan, "NOW I'VE LOST IT")
+    elif re.search("NOW I'VE LOST IT", args, re.IGNORECASE):
+      self.server.privmsg(chan, "I KNOW I CAN KILL")
+    elif re.search("I KNOW I CAN KILL", args, re.IGNORECASE):
+      self.server.privmsg(chan, "THE TRUTH LIES BEYOND THE GATE")
+    elif re.search("THE TRUTH LIES BEYOND THE GATE", args, re.IGNORECASE):
+      self.server.privmsg(chan, "*guitar riff*")
 
     else:
 
