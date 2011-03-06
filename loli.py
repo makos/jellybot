@@ -29,33 +29,52 @@ def save():
 def create ():
     """Creates table structure"""
 
-    #if table not found - create table
-    cur.execute( 'CREATE TABLE IF NOT EXISTS lolis (user TEXT, lolis INTEGER, time INTEGER)' )
-    #except sqlite3.OperationalError, msg:
-    #print msg
+    cur.execute( 'CREATE TABLE IF NOT EXISTS lolis (user TEXT, lolis INTEGER, time INTEGER, stime INTEGER)' )
 
-def add( user, lolis ):
+def add( user, lolis, act = 0 ):
     """Insert new user in database"""
 
     #Gets current time
     thetime = time.time()
 
-    #Insert user data into table
-    cur.execute( 'INSERT INTO lolis VALUES ("{}", "{}", "{}")'.format( user, lolis, int(thetime) ) )
+    action = 'INSERT INTO lolis VALUES ("{}", "{}"'.format( user, lolis )
 
-def update( user, lolis ):
+    if act == 0:
+        action += ', "{}", "1"'.format( thetime )
+    if act == 1:
+        action += ', "1", "{}"'.format( thetime )
+
+    action += " )"
+
+    print action
+
+    #Insert user data into table
+    cur.execute( action )
+
+def update( user, lolis, act = 0 ):
     """Updates user data"""
 
     #Gets current time
-    thetime = time.time()
+    thetime = int(time.time())
 
-    #Find user and update loli count and timestamp
-    cur.execute( 'UPDATE lolis SET lolis = "{}", time = "{}" WHERE user = "{}"'.format( lolis, int(thetime), user ) )
+    action = 'UPDATE lolis SET lolis = "{}"'.format( lolis )
+
+    if act == 0:
+        action += ", time = {}".format( thetime )
+    if act == 1:
+        action += ", stime = {}".format( thetime )
+
+    action += ' WHERE user = "{}"'.format( user )
+
+    print action
+
+    #Find user and update loli count and timestamps
+    cur.execute( action )
 
 def load( user ):
     """Loads user data"""
 
-    cur.execute('SELECT lolis, time FROM lolis WHERE user="{}"'.format(user))
+    cur.execute('SELECT lolis, time, stime FROM lolis WHERE user="{}"'.format(user))
 
     #Fetch all data from our querie
     data = cur.fetchone()
@@ -66,7 +85,7 @@ def loli( user ):
 
     #Interval between command in seconds
     #6 hours should be sane interval
-    interval = 3600 #Keeping it at 5 seconds for testing purposes
+    interval = 3600
 
     #Min and Max # of lolis you can get
     min_lolis = 0
@@ -115,15 +134,13 @@ def loli( user ):
     else:
         output = "{} got, {} lolis with total of {} lolis!".format( user, newlolis, lolis)
 
-    print output;
-
     #Save data
     if mode == 0:
         #Insert new user
         add( user, lolis )
     elif mode == 1:
         #Update previous record
-        update( user, lolis)
+        update( user, lolis )
 
     return output
 
@@ -141,8 +158,11 @@ def steal( caller, target ):
     t_mode = 0
 
     #Loads user data
-    _caller = load( caller )
+    _caller = load( caller ) # [ lolis, !loli timestamp, !steal timestamp ]
     _target = load( target )
+
+    if not _caller:
+        return
 
     #Target has no lolis
     if not _target:
@@ -151,7 +171,7 @@ def steal( caller, target ):
     #Interval between command in seconds
     interval = 3600
     thetime   = int(time.time())
-    timestamp = int(_caller[1])
+    timestamp = int(_caller[2])
 
     #Check interval
     if( ( thetime - timestamp ) < interval ):
@@ -179,9 +199,9 @@ def steal( caller, target ):
 
     #Save callers data
     if c_mode == 0:
-        add( caller, c_lolis )
+        add( caller, c_lolis, 1 )
     elif c_mode == 1:
-        update( caller, c_lolis)
+        update( caller, c_lolis, 1)
 
     if loot <= 0:
         return "{} couldn't steal any lolis from {}".format( caller, target )
@@ -189,9 +209,9 @@ def steal( caller, target ):
     #Save targets data
     if t_mode == 0:
         #shouldn't happen
-        add( target, t_lolis )
+        add( target, t_lolis, 2 )
     elif t_mode == 1:
-        update( target, t_lolis)
+        update( target, t_lolis, 2)
 
     return "{} stole {} lolis from {} and now has a total of {} lolis.".format( caller, loot, target, c_lolis )
 

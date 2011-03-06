@@ -15,8 +15,8 @@ mods = ("makos", "fatapaca")
 
 # Add more stuff. kthxbai
 tlnote = ("TL Note: Yuki means snow.", "TL Note: Kuroneko means black cat.", \
-          "TL Note: keikaku means plan.", "TL Note: yome means bride, here it is implied as wife.", \
-          "TL Note: Hourou Musuko means What The Fuck Am I Watching.")
+      "TL Note: keikaku means plan.", "TL Note: yome means bride, here it is implied as wife.", \
+      "TL Note: Hourou Musuko means What The Fuck Am I Watching.")
 
 # any idea how to make this display in multiple lines?
 # """TL Note: Schneizel just made an illegal move in chess, so it doesn't make sense
@@ -52,338 +52,338 @@ port = 6667
 
 class Bot:
 
-    irc = irclib.IRC()
-    server = irc.server()
-    public = 1
+  irc = irclib.IRC()
+  server = irc.server()
+  public = 1
 
-    pomfdown = int( time.time() )
-    baww     = int( time.time() )
+  pomfdown = int( time.time() )
+  baww   = int( time.time() )
 
-    def callback(self, handle, arg):
-        """Standard callback function. Defines default commands to be used by typing them into chat."""
+  def callback(self, handle, arg):
+    """Standard callback function. Defines default commands to be used by typing them into chat."""
 
-        user = irclib.nm_to_n(arg.source())
-        args = arg.arguments()[0]
-        chan = arg.target()
+    user = irclib.nm_to_n(arg.source())
+    args = arg.arguments()[0]
+    chan = arg.target()
 
-        if "!help" in args:
-            self.server.privmsg(user, self.help(user))
-        elif "!checkem" in args:
-            output = checkem.checkem( user )
+    if "!help" in args:
+      self.server.privmsg(user, self.help(user))
+    elif "!checkem" in args:
+      output = checkem.checkem( user )
 
-            if output:
-                self.server.privmsg(chan, output )
+      if output:
+        self.server.privmsg(chan, output )
 
-        elif "!tlnote" in args:
-            self.server.privmsg(chan, self.tlnote())
+    elif "!tlnote" in args:
+      self.server.privmsg(chan, self.tlnote())
 
-        elif re.search("^(!eightball|!8ball)", args):              # To have the ^ wildcard working in regexp we need to strip args from ['] first.
-            self.server.privmsg( chan, eightball.eightball( user ) )
+    elif re.search("^(!eightball|!8ball)", args):       # To have the ^ wildcard working in regexp we need to strip args from ['] first.
+      self.server.privmsg( chan, eightball.eightball( user ) )
 
-        elif re.search( "^!loli", args):
+    elif re.search( "^!loli", args):
 
-            #Open db and create if needed
-            loli.open()
-            loli.create()
+      #Open db and create if needed
+      loli.open()
+      loli.create()
 
-            #Execute command and return output
-            output = loli.loli( user )
+      #Execute command and return output
+      output = loli.loli( user )
 
-            if output:
-                self.server.privmsg(chan, output )
+      if output:
+        self.server.privmsg(chan, output )
 
-            #Close db
-            loli.save()
+      #Close db
+      loli.save()
 
-        elif re.search( "^!steal", args):
+    elif re.search( "^!steal", args):
 
-            arguments = args.split(" ")
+      arguments = args.split(" ")
 
-            #Only wrote !steal
-            if len( arguments ) < 2:
-                return;
+      #Only wrote !steal
+      if len( arguments ) < 2:
+        return;
 
-            target = arguments[1]
+      target = arguments[1]
 
-            print user, "is attempting to steal lolis from", target
+      print user, "is attempting to steal lolis from", target
 
-            if user == target:
-                print ">> Attempting to steal from himself"
+      if user == target:
+        print ">> Attempting to steal from himself"
 
-            #Open db
-            loli.open()
-            loli.create()
+      #Open db
+      loli.open()
+      loli.create()
 
-            #Execute command and return output
-            output = loli.steal( user, target )
+      #Execute command and return output
+      output = loli.steal( user, target )
 
-            if output:
-                self.server.privmsg(chan, output )
-            else:
-                print ">> Nope."
+      if output:
+        self.server.privmsg(chan, output )
+      else:
+        print ">> Nope."
 
-            #Close db
-            loli.save()
+      #Close db
+      loli.save()
 
-        elif re.search( "^!top5", args):
-            loli.open()
-            loli.create()
+    elif re.search( "^!top5", args):
+      loli.open()
+      loli.create()
 
-            data = loli.top5()
+      data = loli.top5()
 
-            if data:
-                _i = 1
+      if data:
+        _i = 1
 
-                for user in data:
-                    self.server.privmsg(chan, "#{} :: {} with {} lolis\n".format( _i, user[0], user[1], ) )
-                    _i += 1
+        for user in data:
+          self.server.privmsg(chan, "#{} :: {} with {} lolis\n".format( _i, user[0], user[1], ) )
+          _i += 1
 
-        elif re.search( "^!google", args ):
+    elif re.search( "^!google", args ):
 
-            arguments = args.split(" ")
+      arguments = args.split(" ")
 
-            if len(arguments) < 2:
-                return
-
-            _query = arguments[1:]
-
-            self.server.privmsg( chan, google.search( user, " ".join( _query ) ) )
-
-        elif re.search("^!gelbooru", args):
-
-            arguments = args.split(" ")
-
-            if len(arguments) < 2:
-                return
-
-            _query = arguments[1:]
-
-            self.server.privmsg( chan, gelbooru.open( " ".join( _query ) ) )
-
-        elif re.search( "^!timeleft", args ):
-
-            self.server.privmsg(chan, timeleft.timeleft( user ))
-
-        elif re.search("^POMF =3", args):
-
-            #Stop spamming that shit
-            if ( int(time.time()) - self.pomfdown ) > 5:
-                self.server.privmsg(chan, "Wah!")
-
-                self.pomfdown = int(time.time())
-
-        elif re.search("^Wah!", args):
-
-            #Stop spamming that shit
-            if ( int(time.time()) - self.pomfdown ) > 5:
-                self.server.privmsg(chan, "What are we gonna do on the bed?")
-
-                self.pomfdown = int(time.time())
-
-        elif re.search("^;_;", args):
-
-            if ( int(time.time()) - self.baww ) > 5:
-                self.server.privmsg(chan, ";_;")
-
-                self.baww = int(time.time())
-
-        else:
-
-            mentioned   = 0
-            public      = self.public
-            nickname    = self.server.nickname
-
-            output = chat.parse( user, args, nickname, public )
-
-            if output != None:
-                self.server.privmsg( chan, output )
-
-            return
-
-    def help(self, user):
-        """Sends help dialog via PM to user that asked."""
-
-        self.server.privmsg(user, "Available commands:")
-        self.server.privmsg(user, "* !help - this dialog")
-        self.server.privmsg(user, "* !checkem - check 'em")
-        self.server.privmsg(user, "* !tlnote - themoaryouknow")
-        self.server.privmsg(user, "* !google - google search")
-        self.server.privmsg(user, "* !gelbooru [tags] - gelbooru search for latest picture under given tag, if no tag given it defaults to infinite_stratos")
-        self.server.privmsg(user, "* !loli - catch 'em all")
-
-    def ctcp(self, connection, arg):
-        """Sends CTCP answer to VERSION query."""
-        chan    = arg.target()
-        caller  = irclib.nm_to_n(arg.source())
-        _args   = arg.arguments()
-
-        if len(_args) > 1:
-            if _args[0] == "ACTION":
-                _act = _args[1].split()
-                if len(_act) > 1:
-                    if _act[0] == "hugs":
-
-                        if _act[1] == self.server.nickname:
-                            self.server.ctcp('action', chan, "slaps {}".format(caller))
-
-        if arg.arguments() [0].upper() == "VERSION":
-            connection.ctcp_reply(arg.source().split('!')[0], "VERSION Python-IRCLib bot v0.2")
-            print "Responded to CTCP VERSION query from", arg.source()
-
-    def join(self, handle, arg):
-        """Callback function greeting users joining the channel."""
-
-        if irclib.nm_to_n(arg.source()) in ops.keys():
-            self.server.privmsg( arg.target(), "{0}, the representative candidate from {1} is here!".format(irclib.nm_to_n(arg.source()), ops.get(irclib.nm_to_n(arg.source()))))
-            print "JOIN: ", arg.source()
-        else:
-            pass
-
-    def invite(self, handle, arg):
-        chan = arg.arguments()[0]
-
-        self.server.join( chan )
-
-        print "Joining", chan, "because", arg.source(), "invited me."
-
-    def kick(self, handle, arg):
-        chan    = arg.target()
-        kicker  = arg.source()
-        target  = arg.arguments()[0]
-
-        print "KICK: ", kicker, "kicked", target, "in", chan
-
-        if target == self.server.nickname:
-            print "Rejoining", chan
-            self.server.join( chan )
-
+      if len(arguments) < 2:
         return
 
-    def modcmd(self, handle, arg):
-        """Callback function for moderator commands (quit etc.)"""
+      _query = arguments[1:]
 
-        user = irclib.nm_to_n(arg.source())
-        args = arg.arguments()[0]
+      self.server.privmsg( chan, google.search( user, " ".join( _query ) ) )
 
-        if user in mods or re.search( "desu\.wa", user) or re.search("is\.my\.husbando", user ):
+    elif re.search("^!gelbooru", args):
 
-            if ".quit" in args:
-                self.server.close()
-                sys.exit()
+      arguments = args.split(" ")
 
-            elif re.search(".say", args):
-                arg = args.split()
+      if len(arguments) < 2:
+        return
 
-                if len(arg) < 2:
-                    return
+      _query = arguments[1:]
 
-                if arg[1] in channels:
-                    if re.search("/me", arg[2]):
-                        if len(arg) < 4:
-                            return
+      self.server.privmsg( chan, gelbooru.open( " ".join( _query ) ) )
 
-                        self.server.ctcp('action', arg[1], " ".join( arg[3:] ) )
+    elif re.search( "^!timeleft", args ):
 
-                    else:
-                        if len(arg) < 3:
-                            return
+      self.server.privmsg(chan, timeleft.timeleft( user ))
 
-                        self.server.privmsg(arg[1], " ".join( arg[2:] ))
+    elif re.search("^POMF =3", args):
 
-                else:
-                    if re.search("/me", arg[1]):
+      #Stop spamming that shit
+      if ( int(time.time()) - self.pomfdown ) > 5:
+        self.server.privmsg(chan, "Wah!")
 
-                        if len(arg) < 3:
-                            return
+        self.pomfdown = int(time.time())
 
-                        self.action( " ".join( arg[2:] ) )
+    elif re.search("^Wah!", args):
 
-                    else:
-                        self.server.privmsg(channels[0], " ".join( arg[1:] ))
+      #Stop spamming that shit
+      if ( int(time.time()) - self.pomfdown ) > 5:
+        self.server.privmsg(chan, "What are we gonna do on the bed?")
 
-            elif "!help" in args:
-                self.help(user)
+        self.pomfdown = int(time.time())
 
-            elif re.search(".nick", args):
-                arg = args.split()
+    elif re.search("^;_;", args):
 
-                if len(arg) < 2:
-                    return
+      if ( int(time.time()) - self.baww ) > 5:
+        self.server.privmsg(chan, ";_;")
 
-                print "Changed nick to", arg[1]
-                self.server.nick(arg[1])
+        self.baww = int(time.time())
 
-            elif ".pubchat" in args:
-                if self.public == 0: self.public = 1
-                else: self.public = 0
+    else:
 
-                self.server.privmsg(user, "Public conversation mode is now {}.".format( self.public == 0 and "OFF" or "ON" ))
+      mentioned   = 0
+      public    = self.public
+      nickname  = self.server.nickname
 
-            elif re.search(".join", str(args)):
-                    arg = args.split()
+      output = chat.parse( user, args, nickname, public )
 
-                    if len(arg) < 2:
-                        return
+      if output != None:
+        self.server.privmsg( chan, output )
 
-                    for chan in arg[1:]:
-                        print "Joing channel", chan
-                        self.server.join( chan )
+      return
 
-            elif re.search(".part", args):
-                    arg = args.split()
+  def help(self, user):
+    """Sends help dialog via PM to user that asked."""
 
-                    if len(arg) < 2:
-                        return
+    self.server.privmsg(user, "Available commands:")
+    self.server.privmsg(user, "* !help - this dialog")
+    self.server.privmsg(user, "* !checkem - check 'em")
+    self.server.privmsg(user, "* !tlnote - themoaryouknow")
+    self.server.privmsg(user, "* !google - google search")
+    self.server.privmsg(user, "* !gelbooru [tags] - gelbooru search for latest picture under given tag, if no tag given it defaults to infinite_stratos")
+    self.server.privmsg(user, "* !loli - catch 'em all")
 
-                    for chan in arg[1:]:
-                        print "Leaving channel", chan
-                        self.server.part( chan )
+  def ctcp(self, connection, arg):
+    """Sends CTCP answer to VERSION query."""
+    chan  = arg.target()
+    caller  = irclib.nm_to_n(arg.source())
+    _args   = arg.arguments()
 
-            else:
-                output = chat.parse( user, args, self.server.nickname, True, False )
+    if len(_args) > 1:
+      if _args[0] == "ACTION":
+        _act = _args[1].split()
+        if len(_act) > 1:
+          if _act[0] == "hugs":
 
-                if output != None:
-                    self.server.privmsg( user, output )
+            if _act[1] == self.server.nickname:
+              self.server.ctcp('action', chan, "slaps {}".format(caller))
+
+    if arg.arguments() [0].upper() == "VERSION":
+      connection.ctcp_reply(arg.source().split('!')[0], "VERSION Python-IRCLib bot v0.2")
+      print "Responded to CTCP VERSION query from", arg.source()
+
+  def join(self, handle, arg):
+    """Callback function greeting users joining the channel."""
+
+    if irclib.nm_to_n(arg.source()) in ops.keys():
+      self.server.privmsg( arg.target(), "{0}, the representative candidate from {1} is here!".format(irclib.nm_to_n(arg.source()), ops.get(irclib.nm_to_n(arg.source()))))
+      print "JOIN: ", arg.source()
+    else:
+      pass
+
+  def invite(self, handle, arg):
+    chan = arg.arguments()[0]
+
+    self.server.join( chan )
+
+    print "Joining", chan, "because", arg.source(), "invited me."
+
+  def kick(self, handle, arg):
+    chan  = arg.target()
+    kicker  = arg.source()
+    target  = arg.arguments()[0]
+
+    print "KICK: ", kicker, "kicked", target, "in", chan
+
+    if target == self.server.nickname:
+      print "Rejoining", chan
+      self.server.join( chan )
+
+    return
+
+  def modcmd(self, handle, arg):
+    """Callback function for moderator commands (quit etc.)"""
+
+    user = irclib.nm_to_n(arg.source())
+    args = arg.arguments()[0]
+
+    if user in mods or re.search( "desu\.wa", user) or re.search("is\.my\.husbando", user ):
+
+      if ".quit" in args:
+        self.server.close()
+        sys.exit()
+
+      elif re.search(".say", args):
+        arg = args.split()
+
+        if len(arg) < 2:
+          return
+
+        if arg[1] in channels:
+          if re.search("/me", arg[2]):
+            if len(arg) < 4:
+              return
+
+            self.server.ctcp('action', arg[1], " ".join( arg[3:] ) )
+
+          else:
+            if len(arg) < 3:
+              return
+
+            self.server.privmsg(arg[1], " ".join( arg[2:] ))
+
         else:
-            print "PRIVMSG from", arg.source(), ":", args
-            output = chat.parse( user, args, self.server.nickname, True, False )
+          if re.search("/me", arg[1]):
 
-            if output != None:
-                print "->> REPLY:", output
-                self.server.privmsg( user, output )
+            if len(arg) < 3:
+              return
 
-    def action(self, arg):
-        """Prints /me action in given channel."""
+            self.action( " ".join( arg[2:] ) )
+
+          else:
+            self.server.privmsg(channels[0], " ".join( arg[1:] ))
+
+      elif "!help" in args:
+        self.help(user)
+
+      elif re.search(".nick", args):
+        arg = args.split()
+
+        if len(arg) < 2:
+          return
+
+        print "Changed nick to", arg[1]
+        self.server.nick(arg[1])
+
+      elif ".pubchat" in args:
+        if self.public == 0: self.public = 1
+        else: self.public = 0
+
+        self.server.privmsg(user, "Public conversation mode is now {}.".format( self.public == 0 and "OFF" or "ON" ))
+
+      elif re.search(".join", str(args)):
+          arg = args.split()
+
+          if len(arg) < 2:
+            return
+
+          for chan in arg[1:]:
+            print "Joing channel", chan
+            self.server.join( chan )
+
+      elif re.search(".part", args):
+          arg = args.split()
+
+          if len(arg) < 2:
+            return
+
+          for chan in arg[1:]:
+            print "Leaving channel", chan
+            self.server.part( chan )
+
+      else:
+        output = chat.parse( user, args, self.server.nickname, True, False )
+
+        if output != None:
+          self.server.privmsg( user, output )
+    else:
+      print "PRIVMSG from", arg.source(), ":", args
+      output = chat.parse( user, args, self.server.nickname, True, False )
+
+      if output != None:
+        print "->> REPLY:", output
+        self.server.privmsg( user, output )
+
+  def action(self, arg):
+    """Prints /me action in given channel."""
 
 
-        self.server.ctcp('action', channels[0], arg)
-        print "CTCP ACTION:", arg
+    self.server.ctcp('action', channels[0], arg)
+    print "CTCP ACTION:", arg
 
-    def tlnote(self):
-        """TL Note: docstring is what you are reading now."""
+  def tlnote(self):
+    """TL Note: docstring is what you are reading now."""
 
-        return random.choice(tlnote)
+    return random.choice(tlnote)
 
-    def connect(self):
-        """Main function, connecting to server and channel and setting up event handlers."""
+  def connect(self):
+    """Main function, connecting to server and channel and setting up event handlers."""
 
-        global con, user, channels, nick, port
+    global con, user, channels, nick, port
 
-        self.server.connect(con, port, nick)
-        self.server.user(user, user)
+    self.server.connect(con, port, nick)
+    self.server.user(user, user)
 
-        for chan in channels:
-            self.server.join(chan)
+    for chan in channels:
+      self.server.join(chan)
 
-        self.server.add_global_handler("pubmsg", self.callback)
-        self.server.add_global_handler("privmsg", self.modcmd)
-        self.server.add_global_handler("ctcp", self.ctcp)
-        self.server.add_global_handler("join", self.join)
-        self.server.add_global_handler("kick", self.kick)
-        self.server.add_global_handler("invite", self.invite)
-        self.irc.process_forever()
+    self.server.add_global_handler("pubmsg", self.callback)
+    self.server.add_global_handler("privmsg", self.modcmd)
+    self.server.add_global_handler("ctcp", self.ctcp)
+    self.server.add_global_handler("join", self.join)
+    self.server.add_global_handler("kick", self.kick)
+    self.server.add_global_handler("invite", self.invite)
+    self.irc.process_forever()
 
 
 if __name__ == "__main__":
-    bot = Bot()
-    bot.connect()
+  bot = Bot()
+  bot.connect()
