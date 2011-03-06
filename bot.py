@@ -211,6 +211,9 @@ class Bot:
     elif re.search("THE TRUTH EXISTS BEYOND THE GATE", args, re.IGNORECASE):
       self.server.privmsg(chan, "*guitar riff*")
 
+    elif re.search("XD|xD", args):
+      self.server.privmsg(chan, "{}, stop that!".format(user))
+
     elif re.search("^!gsearch", args):
       arguments = args.split(" ")
 
