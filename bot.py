@@ -210,7 +210,7 @@ class Bot:
       self.server.privmsg(chan, "THE TRUTH LIES BEYOND THE GATE")
     elif re.search("THE TRUTH LIES BEYOND THE GATE", args, re.IGNORECASE):
       self.server.privmsg(chan, "*guitar riff*")
-	
+
     elif re.search("^!gsearch", args):
       arguments = args.split(" ")
 
