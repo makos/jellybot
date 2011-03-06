@@ -5,7 +5,7 @@ import irclib, re, random, time, sys
 irclib.DEBUG=False # True for shitload of verbose text
 
 #Plugins
-import loli, checkem, eightball, google, gelbooru, timeleft, chat, gelboorus
+import loli, checkem, eightball, google, gelbooru, timeleft, chat, gelboorus, tlnote
 
 # Feel free to add new ops
 ops = {"UbrFrG":"South Africa", "makos":"Poland", "fatapaca":"Latvia", "Feath":"Canada"}
@@ -13,39 +13,14 @@ ops = {"UbrFrG":"South Africa", "makos":"Poland", "fatapaca":"Latvia", "Feath":"
 # Chosen Ones
 mods = ("makos", "fatapaca")
 
-# Add more stuff. kthxbai
-tlnote = ("TL Note: Yuki means snow.", "TL Note: Kuroneko means black cat.", \
-      "TL Note: keikaku means plan.", "TL Note: yome means bride, here it is implied as wife.", \
-      "TL Note: Hourou Musuko means What The Fuck Am I Watching.")
-
-# any idea how to make this display in multiple lines?
-# """TL Note: Schneizel just made an illegal move in chess, so it doesn't make sense
-#that he could say checkmate, he might possibly say check but the use of the term here is wrong. The only way this could be a legal
-#move is if this were blitz chess, also known as "Fast Chess". However, in this scene, it is never declared they are playing "Fast Chess",
-#and neither of the players are using clocks to time their turns in the game. (Source: /a/)
-#TL Note 2: The reason why Schneizel did this is because the game was going to turn into a threefold rep. By pulling this illegal move, he
-#is able to gain insight into Zero's personality, and "un-mask" part of him, thus fulfilling his victory condition in a subtle and Schneizel-ish
-#manner. To look at the picture more properly, think of the chess board not as a game but as a battlefield. Zero's other options were to take his King,
-#which would have made him similar to his father, or to call Schneizel out on making an illegal move, which would have made Zero look dumb since
-#"lol rules of war". What Zero chose to do was keep his pride and run away from a free victory. Furthermore, by placing his King behind a pawn instead
-#of any other open tile, Zero symbolically shows cowardice.
-#TL Note 3: Alternatively, read it like this:
-#[aers|laptop] Well personally I think the symbolism in Schneizel moving his king is that he wants to be buddy-buddy with Zero. And that Zero moving
-#behind the pawn is because he is afraid of Schneizel's advances. (Geass is about yaoi and shit, so the likelihood of aers being correct is somewhere
-#over 9000.)
-#TL Note 4: This scene is interesting because it raises the question of whether or not Schneizel "plays dirty" in bed with Canon. :3
-#CHECKMATE."""
-# whew.
-
-
 # Global Settings
 
 #Channels
 #Defalt output channel for some commands is first channel
-#channels = [ "#infinite-stratos", "#ujelly", "#madoka", "#k-on-game", "#koihime", "#pswg" ]
-channels = [ "#ujelly" ]
+channels = [ "#infinite-stratos", "#ujelly", "#madoka", "#k-on-game", "#koihime", "#pswg" ]
+#channels = [ "#ujelly" ]
 
-nick = "Jollybot"
+nick = "Jellybot"
 con = "irc.rizon.net"
 user = "ujelly"
 port = 6667
@@ -76,7 +51,32 @@ class Bot:
         self.server.privmsg(chan, output )
 
     elif "!tlnote" in args:
-      self.server.privmsg(chan, self.tlnote())
+      tlnote._open()
+      tlnote._create()
+
+      note = tlnote.tlnote()
+
+      if note:
+        self.server.privmsg(chan, note)
+
+      tlnote._close()
+
+    elif ".tlnote" in args:
+
+      arguments = args.split(" ")
+
+      if len(arguments) < 2:
+        return
+
+      note = " ".join( arguments[1:] )
+
+      tlnote._open()
+      tlnote._create()
+
+      tlnote.add( user, note )
+      self.server.privmsg( user, "Added: {}".format( note ) )
+
+      tlnote._close()
 
     elif re.search("^(!eightball|!8ball)", args):       # To have the ^ wildcard working in regexp we need to strip args from ['] first.
       self.server.privmsg( chan, eightball.eightball( user ) )
@@ -208,7 +208,7 @@ class Bot:
       self.server.privmsg(chan, "I KNOW I CAN KILL")
     elif re.search("I KNOW I CAN KILL", args, re.IGNORECASE):
       self.server.privmsg(chan, "THE TRUTH LIES BEYOND THE GATE")
-    elif re.search("THE TRUTH LIES BEYOND THE GATE", args, re.IGNORECASE):
+    elif re.search("THE TRUTH EXISTS BEYOND THE GATE", args, re.IGNORECASE):
       self.server.privmsg(chan, "*guitar riff*")
 
     elif re.search("^!gsearch", args):
