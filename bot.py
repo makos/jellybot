@@ -5,7 +5,7 @@ import irclib, re, random, time, sys
 irclib.DEBUG=False # True for shitload of verbose text
 
 #Plugins
-import loli, checkem, eightball, google, gelbooru, timeleft, chat
+import loli, checkem, eightball, google, gelbooru, timeleft, chat, gelboorus
 
 # Feel free to add new ops
 ops = {"UbrFrG":"South Africa", "makos":"Poland", "fatapaca":"Latvia", "Feath":"Canada"}
@@ -42,10 +42,10 @@ tlnote = ("TL Note: Yuki means snow.", "TL Note: Kuroneko means black cat.", \
 
 #Channels
 #Defalt output channel for some commands is first channel
-channels = [ "#infinite-stratos", "#ujelly", "#madoka", "#k-on-game", "#koihime", "#pswg" ]
-#channels = [ "#ujelly" ]
+#channels = [ "#infinite-stratos", "#ujelly", "#madoka", "#k-on-game", "#koihime", "#pswg" ]
+channels = [ "#ujelly" ]
 
-nick = "Jellybot"
+nick = "Jollybot"
 con = "irc.rizon.net"
 user = "ujelly"
 port = 6667
@@ -210,9 +210,18 @@ class Bot:
       self.server.privmsg(chan, "THE TRUTH LIES BEYOND THE GATE")
     elif re.search("THE TRUTH LIES BEYOND THE GATE", args, re.IGNORECASE):
       self.server.privmsg(chan, "*guitar riff*")
+	
+    elif re.search("^!gsearch", args):
+      arguments = args.split(" ")
+
+      if len(arguments) < 2:
+        return
+
+      _query = arguments[1:]
+
+      self.server.privmsg( chan, str(gelboorus.search( " ".join( _query ) ) ) )
 
     else:
-
       mentioned = 0
       public    = self.public
       nickname  = self.server.nickname
