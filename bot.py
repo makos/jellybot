@@ -57,7 +57,8 @@ class Bot:
   public = 1
 
   pomfdown = int( time.time() )
-  baww   = int( time.time() )
+  baww     = int( time.time() )
+  untz     = int( time.time() )
 
   def callback(self, handle, arg):
     """Standard callback function. Defines default commands to be used by typing them into chat."""
@@ -187,9 +188,16 @@ class Bot:
 
         self.baww = int(time.time())
 
+    elif re.search("UNTZ", args):
+
+      if ( int(time.time()) - self.untz ) > 5:
+        self.server.privmsg(chan, "UNTZ UNTZ UNTZ UTNZ UTNZ UNTZ")
+
+        self.untz = int(time.time())
+
     else:
 
-      mentioned   = 0
+      mentioned = 0
       public    = self.public
       nickname  = self.server.nickname
 
