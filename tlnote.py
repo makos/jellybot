@@ -32,7 +32,7 @@ def _close():
 
 def _insert( user, note ):
 
-  cur.execute( 'INSERT INTO data VALUES (null, "{}", "{}", {})'.format( note, user, int(time.time()) ) )
+  cur.execute( 'INSERT INTO data VALUES (null, \'{}\', \'{}\', \'{}\')'.format( note, user, int(time.time()) ) )
 
   return
 
@@ -60,10 +60,12 @@ def add( user, note ):
 
   _time = int(time.time())
 
-  if is_duplicate(note):
+  _note = note.replace("\"", "").replace("\'", "").strip()
+
+  if is_duplicate(_note):
 	  return False
 
-  _insert( user, note )
+  _insert( user, _note)
 
   return True
 
