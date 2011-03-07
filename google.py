@@ -2,6 +2,7 @@
 
 import urllib
 import simplejson
+import re
 
 def query( what ):
 
@@ -20,13 +21,13 @@ def search( user, what ):
 
     results = query( what )
 
-    """ Prints all results
-    for i in results:
-        print i['title'] + ": " + i['url']
-    """
-
     if results:
-        return "{}, your search returned: {} @ {}" .format( user, results[0]['title'].replace("<b>","").replace("</b>", ""),  results[0]['url'])
+        title = results[0]['title'].encode('utf8')
+        title = re.sub("</?b>", "", title)
+
+        url = results[0]['url'].encode('utf8')
+
+        return "{}, your search returned: {} @ {}" .format( user, title, url )
 
     return "{}, I couldn't find anything about {}".format( user, what )
 
