@@ -1,11 +1,11 @@
 #!/usr/bin/env python2
 #-*- coding: utf-8 -*-
 
-import irclib, re, random, time, sys
+import irclib, re, random, time, sys, threading
 irclib.DEBUG=False # True for shitload of verbose text
 
 #Plugins
-import loli, checkem, eightball, google, gelbooru, timeleft, chat, gelboorus, tlnote
+import loli, checkem, eightball, google, gelbooru, timeleft, chat, gelboorus, tlnote, tweets, gtranslate
 
 # Feel free to add new ops
 ops = {"UbrFrG":"South Africa", "makos":"Poland", "fatapaca":"Latvia", "Feath":"Canada"}
@@ -25,6 +25,8 @@ con = "irc.rizon.net"
 user = "ujelly"
 port = 6667
 
+
+
 class Bot:
 
   irc = irclib.IRC()
@@ -34,6 +36,39 @@ class Bot:
   pomfdown = int( time.time() )
   baww     = int( time.time() )
   untz     = int( time.time() )
+
+  def twitter_update( self, name, num = 5, interval = 60 ):
+
+    #Sleep for first time, since we probably aren't in channel yet
+    print "[Twitter] Thread started, sleeping."
+    time.sleep(interval)
+
+    latest = None
+
+    while True:
+
+      print "[Twitter] Updating twitter feed"
+
+      output = tweets.stalk( name, num, latest )
+
+      if not output:
+        print "[Twitter] Nothing returned sleeping"
+        time.sleep(interval)
+        return
+
+      output.reverse()
+
+      for s in output:
+
+        text = s.text
+        id   = s.id
+
+        self.server.privmsg("#pswg", "%s [Posted by D-YAMA %s.]" % ( text.encode("utf8"), s.relative_created_at ))
+        self.server.privmsg("#pswg", ":: Engrish >> %s"          % ( gtranslate._translate(text).encode("utf8") ))
+
+        latest = id
+
+      time.sleep(interval)
 
   def callback(self, handle, arg):
     """Standard callback function. Defines default commands to be used by typing them into chat."""
@@ -207,8 +242,8 @@ class Bot:
     elif re.search("NOW I'VE LOST IT", args, re.IGNORECASE):
       self.server.privmsg(chan, "I KNOW I CAN KILL")
     elif re.search("I KNOW I CAN KILL", args, re.IGNORECASE):
-      self.server.privmsg(chan, "THE TRUTH LIES BEYOND THE GATE")
-    elif re.search("THE TRUTH EXISTS BEYOND THE GATE", args, re.IGNORECASE):
+      self.server.privmsg(chan, "THE TRUTH EXISTS BEYOND THE GATE")
+    elif re.search("THE TRUTH (EXISTS|LIES|IS) BEYOND THE GATE", args, re.IGNORECASE):
       self.server.privmsg(chan, "*guitar riff*")
 
     elif re.search("XD|xD", args):
@@ -395,11 +430,6 @@ class Bot:
     self.server.ctcp('action', channels[0], arg)
     print "CTCP ACTION:", arg
 
-  def tlnote(self):
-    """TL Note: docstring is what you are reading now."""
-
-    return random.choice(tlnote)
-
   def connect(self):
     """Main function, connecting to server and channel and setting up event handlers."""
 
@@ -417,8 +447,13 @@ class Bot:
     self.server.add_global_handler("join", self.join)
     self.server.add_global_handler("kick", self.kick)
     self.server.add_global_handler("invite", self.invite)
+
+    twitter_t = threading.Thread( target=self.twitter_update,args=( "choroyama", 5, 60 ) )
+    twitter_t.start()
+
     self.irc.process_forever()
 
+    twitter_t.join()
 
 if __name__ == "__main__":
   bot = Bot()
