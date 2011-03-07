@@ -54,7 +54,7 @@ class Bot:
       if not output:
         print "[Twitter] Nothing returned sleeping"
         time.sleep(interval)
-        return
+        continue
 
       output.reverse()
 
