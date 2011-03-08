@@ -40,7 +40,7 @@ class Bot:
   def twitter_update( self, name, num = 5, interval = 60 ):
 
     #Sleep for first time, since we probably aren't in channel yet
-    print "[Twitter] Thread started, sleeping."
+    print "[Twitter] Thread started, sleeping.", name
     time.sleep(interval)
 
     latest = None
@@ -184,6 +184,17 @@ class Bot:
       _query = arguments[1:]
 
       self.server.privmsg( chan, google.search( user, " ".join( _query ) ) )
+    elif re.search( "^!moon", args ):
+
+      arguments = args.split(" ")
+
+      if len(arguments) < 2:
+        return
+
+      text = " ".join( arguments[1:] )
+      tl   = gtranslate._translate( text.decode('utf8') )
+
+      self.server.privmsg( chan, "%s, moon >> engrish :: %s" % ( user, tl.encode('utf8') ) )
 
     elif re.search("^!gelbooru", args):
 
@@ -245,9 +256,12 @@ class Bot:
       self.server.privmsg(chan, "THE TRUTH EXISTS BEYOND THE GATE")
     elif re.search("THE TRUTH (EXISTS|LIES|IS) BEYOND THE GATE", args, re.IGNORECASE):
       self.server.privmsg(chan, "*guitar riff*")
+    elif re.search("(X|x|:|;|=)(P|D|\)|\(|\/|\\\)|((>|<|\*|O|o|\^)(\.*|_*|-*)(>|<|\*|O|o|\^))", args):
+      if chan == "#madoka": #Derp
+        return
 
-    elif re.search("XD|xD", args):
-      self.server.privmsg(chan, "{}, stop that!".format(user))
+      if not random.randint(0,4): #25%
+        self.server.privmsg(chan, "{}, gb2 >>>/gaia/".format(user))
 
     elif re.search("^!gsearch", args):
       arguments = args.split(" ")
@@ -298,7 +312,7 @@ class Bot:
               self.server.ctcp('action', chan, "slaps {}".format(caller))
 
     if arg.arguments() [0].upper() == "VERSION":
-      connection.ctcp_reply(arg.source().split('!')[0], "VERSION Python-IRCLib bot v0.2")
+      connection.ctcp_reply(arg.source().split('!')[0], "VERSION Jellybot bot vU.JELLY")
       print "Responded to CTCP VERSION query from", arg.source()
 
   def join(self, handle, arg):
@@ -452,8 +466,7 @@ class Bot:
     twitter_t.start()
 
     self.irc.process_forever()
-
-    twitter_t.join()
+    print "Ended"
 
 if __name__ == "__main__":
   bot = Bot()
