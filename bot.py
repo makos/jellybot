@@ -1,11 +1,13 @@
 #!/usr/bin/env python2
 #-*- coding: utf-8 -*-
 
-import irclib, re, random, time, sys, threading
+import irclib, re, random, time, sys, threading, logging
 irclib.DEBUG=False # True for shitload of verbose text
 
 #Plugins
 import loli, checkem, eightball, google, gelbooru, timeleft, chat, gelboorus, tlnote, tweets, gtranslate
+
+logging.basicConfig(filename='jellybot.log',level=logging.DEBUG)
 
 # Feel free to add new ops
 ops = {"UbrFrG":"South Africa", "makos":"Poland", "fatapaca":"Latvia", "Feath":"Canada"}
@@ -31,6 +33,7 @@ class Bot:
   server = irc.server()
   public = 1
   gaia   = True
+  #running = True
 
   pomfdown = int( time.time() )
   baww     = int( time.time() )
@@ -39,35 +42,33 @@ class Bot:
   def twitter_update( self, name, num = 5, interval = 60, tl = True, channel = "#pswg" ):
 
     #Sleep for first time, since we probably aren't in channel yet
-    print "[Twitter :: %s] Thread started, sleeping." % ( name )
+    logging.debug("[Twitter :: %s] Thread started, sleeping." % ( name ))
+
     time.sleep(interval)
 
     latest = None
 
     while True:
 
-      print "[Twitter :: %s] Updating twitter feed" % ( name )
+      logging.debug("[Twitter :: %s] Updating twitter feed" % ( name ))
 
       output = tweets.stalk( name, num, latest )
 
-      if not output:
-        print "[Twitter :: %s] Nothing returned sleeping" % ( name )
-        time.sleep(interval)
-        continue
+      if output:
 
-      output.reverse()
+        output.reverse()
 
-      for s in output:
+        for s in output:
 
-        text = s.text
-        id   = s.id
+          text = s.text
+          id   = s.id
 
-        self.server.privmsg(channel, "%s [Posted by %s %s.]" % ( text.encode("utf8"), name, s.relative_created_at ))
+          self.server.privmsg(channel, "%s [Posted by %s %s.]" % ( text.encode("utf8"), name, s.relative_created_at ))
 
-        if tl:
-          self.server.privmsg(channel, ":: Engrish >> %s" % ( gtranslate._translate(text).encode("utf8") ))
+          if tl:
+            self.server.privmsg(channel, ":: Engrish >> %s" % ( gtranslate._translate(text).encode("utf8") ))
 
-        latest = id
+          latest = id
 
       time.sleep(interval)
 
@@ -142,10 +143,10 @@ class Bot:
 
       target = arguments[1]
 
-      print user, "is attempting to steal lolis from", target
+      logging.debug("%s is attempting to steal lolis from %s" % ( user, target ))
 
       if user == target:
-        print ">> Attempting to steal from himself"
+        return
 
       #Open db
       loli.open()
@@ -156,8 +157,6 @@ class Bot:
 
       if output:
         self.server.privmsg(chan, output )
-      else:
-        print ">> Nope."
 
       #Close db
       loli.save()
@@ -318,14 +317,14 @@ class Bot:
 
     if arg.arguments() [0].upper() == "VERSION":
       connection.ctcp_reply(arg.source().split('!')[0], "VERSION Jellybot :: Codename: U.JELLY")
-      print "Responded to CTCP VERSION query from", arg.source()
+      logging.debug("Responded to CTCP VERSION query from %s" % arg.source())
 
   def join(self, handle, arg):
     """Callback function greeting users joining the channel."""
 
     if irclib.nm_to_n(arg.source()) in ops.keys():
       self.server.privmsg( arg.target(), "{0}, the representative candidate from {1} is here!".format(irclib.nm_to_n(arg.source()), ops.get(irclib.nm_to_n(arg.source()))))
-      print "JOIN: ", arg.source()
+      logging.debug("JOIN: %s" % arg.source())
     else:
       pass
 
@@ -467,14 +466,21 @@ class Bot:
     self.server.add_global_handler("kick", self.kick)
     self.server.add_global_handler("invite", self.invite)
 
-    twitter_dyama = threading.Thread( target=self.twitter_update,args=( "choroyama", 3, 60 ) )
-    twitter_dyama.start()
+    twitter = threading.Thread( target=self.twitter_update,args=( "choroyama", 3, 60 ) )
+    twitter.setDaemon(True)
+    twitter.start()
 
-    twitter_dyama = threading.Thread( target=self.twitter_update,args=( "TeddyLoidSpace", 3, 60 ) )
-    twitter_dyama.start()
+    twitter = threading.Thread( target=self.twitter_update,args=( "TeddyLoidSpace", 3, 600 ) )
+    twitter.setDaemon(True)
+    twitter.start()
 
-    self.irc.process_forever()
-    print "Ended"
+    try:
+      self.irc.process_forever()
+    except KeyboardInterrupt, e:
+      print "Exiting"
+      sys.exit()
+
+
 
 if __name__ == "__main__":
   bot = Bot()
