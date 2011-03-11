@@ -25,34 +25,33 @@ con = "irc.rizon.net"
 user = "ujelly"
 port = 6667
 
-
-
 class Bot:
 
   irc = irclib.IRC()
   server = irc.server()
   public = 1
+  gaia   = True
 
   pomfdown = int( time.time() )
   baww     = int( time.time() )
   untz     = int( time.time() )
 
-  def twitter_update( self, name, num = 5, interval = 60 ):
+  def twitter_update( self, name, num = 5, interval = 60, tl = True, channel = "#pswg" ):
 
     #Sleep for first time, since we probably aren't in channel yet
-    print "[Twitter] Thread started, sleeping.", name
+    print "[Twitter :: %s] Thread started, sleeping." % ( name )
     time.sleep(interval)
 
     latest = None
 
     while True:
 
-      print "[Twitter] Updating twitter feed"
+      print "[Twitter :: %s] Updating twitter feed" % ( name )
 
       output = tweets.stalk( name, num, latest )
 
       if not output:
-        print "[Twitter] Nothing returned sleeping"
+        print "[Twitter :: %s] Nothing returned sleeping" % ( name )
         time.sleep(interval)
         continue
 
@@ -63,8 +62,10 @@ class Bot:
         text = s.text
         id   = s.id
 
-        self.server.privmsg("#pswg", "%s [Posted by D-YAMA %s.]" % ( text.encode("utf8"), s.relative_created_at ))
-        self.server.privmsg("#pswg", ":: Engrish >> %s"          % ( gtranslate._translate(text).encode("utf8") ))
+        self.server.privmsg(channel, "%s [Posted by %s %s.]" % ( text.encode("utf8"), name, s.relative_created_at ))
+
+        if tl:
+          self.server.privmsg(channel, ":: Engrish >> %s" % ( gtranslate._translate(text).encode("utf8") ))
 
         latest = id
 
@@ -257,6 +258,10 @@ class Bot:
     elif re.search("THE TRUTH (EXISTS|LIES|IS) BEYOND THE GATE", args, re.IGNORECASE):
       self.server.privmsg(chan, "*guitar riff*")
     elif re.search("(X|x|:|;|=)(P|D|\)|\(|\/|\\\)|((>|<|\*|O|o|\^)(\.*|_*|-*)(>|<|\*|O|o|\^))", args):
+
+      if self.gaia:
+        return  #We'ŗe in GAIA, nothing to do here.
+
       if chan == "#madoka": #Derp
         return
 
@@ -312,7 +317,7 @@ class Bot:
               self.server.ctcp('action', chan, "slaps {}".format(caller))
 
     if arg.arguments() [0].upper() == "VERSION":
-      connection.ctcp_reply(arg.source().split('!')[0], "VERSION Jellybot bot vU.JELLY")
+      connection.ctcp_reply(arg.source().split('!')[0], "VERSION Jellybot :: Codename: U.JELLY")
       print "Responded to CTCP VERSION query from", arg.source()
 
   def join(self, handle, arg):
@@ -462,8 +467,11 @@ class Bot:
     self.server.add_global_handler("kick", self.kick)
     self.server.add_global_handler("invite", self.invite)
 
-    twitter_t = threading.Thread( target=self.twitter_update,args=( "choroyama", 5, 60 ) )
-    twitter_t.start()
+    twitter_dyama = threading.Thread( target=self.twitter_update,args=( "choroyama", 3, 60 ) )
+    twitter_dyama.start()
+
+    twitter_dyama = threading.Thread( target=self.twitter_update,args=( "TeddyLoidSpace", 3, 60 ) )
+    twitter_dyama.start()
 
     self.irc.process_forever()
     print "Ended"

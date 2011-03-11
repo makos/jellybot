@@ -7,9 +7,15 @@ api = twitter.Api()
 
 def stalk( name = "choroyama", num = 5, start = None):
 
-  tweets = api.GetUserTimeline(screen_name=name, count=num, since_id=start)
+  try:
+    tweets = api.GetUserTimeline(screen_name=name, count=num, since_id=start)
+    return tweets
+  except:
+    print "Shit, something's wrong"
 
-  return tweets
+  return
+
+
 
 if __name__ == "__main__":
 
