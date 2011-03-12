@@ -22,7 +22,7 @@ mods = ("makos", "fatapaca")
 channels = [ "#infinite-stratos", "#ujelly", "#madoka", "#k-on-game", "#koihime", "#pswg" ]
 #channels = [ "#ujelly" ]
 
-nick = "Jollybot"
+nick = "Jellybot"
 con = "irc.rizon.net"
 user = "ujelly"
 port = 6667
@@ -343,6 +343,7 @@ class Bot:
     print "KICK: ", kicker, "kicked", target, "in", chan
 
     if target == self.server.nickname:
+      time.sleep(5)
       print "Rejoining", chan
       self.server.join( chan )
 
@@ -417,6 +418,9 @@ class Bot:
           for chan in arg[1:]:
             print "Joing channel", chan
             self.server.join( chan )
+            
+            if not chan in channels:
+              channels.append(chan)
 
       elif re.search(".part", args):
           arg = args.split()
@@ -428,11 +432,16 @@ class Bot:
             print "Leaving channel", chan
             self.server.part( chan )
 
+            if chan in channels:
+              channels.remove(chan)
+      elif re.search(".channels", args):
+        self.server.privmsg(user, "Channels: %s" % " ".join(channels) )
+
 	    
       elif re.search(".settopic", args):
 		    arg = args.split()
 		  
-		    if len(arg) < 2:
+		    if len(arg) < 3:
 		      return
 		  
 		    print "Updating topic with", arg[2], arg[3]
