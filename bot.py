@@ -5,7 +5,7 @@ import irclib, re, random, time, sys, threading, logging
 irclib.DEBUG=False # True for shitload of verbose text
 
 #Plugins
-import loli, checkem, eightball, google, gelbooru, timeleft, chat, gelboorus, tlnote, tweets, gtranslate
+import loli, checkem, eightball, google, gelbooru, timeleft, chat, gelboorus, tlnote, tweets, gtranslate, settopic
 
 logging.basicConfig(filename='jellybot.log',level=logging.DEBUG)
 
@@ -19,8 +19,8 @@ mods = ("makos", "fatapaca")
 
 #Channels
 #Defalt output channel for some commands is first channel
-channels = [ "#infinite-stratos", "#ujelly", "#madoka", "#k-on-game", "#koihime", "#pswg" ]
-#channels = [ "#ujelly" ]
+#channels = [ "#infinite-stratos", "#ujelly", "#madoka", "#k-on-game", "#koihime", "#pswg" ]
+channels = [ "#ujelly" ]
 
 nick = "Jellybot"
 con = "irc.rizon.net"
@@ -428,11 +428,23 @@ class Bot:
             print "Leaving channel", chan
             self.server.part( chan )
 
+	    
+      elif re.search(".settopic", args):
+		    arg = args.split()
+		  
+		    if len(arg) < 2:
+		      return
+		  
+		    print "Updating topic with thread number", arg[1]
+		    self.server.topic(channels[0], settopic.set_topic(arg[1]))
+        
       else:
+        
         output = chat.parse( user, args, self.server.nickname, True, False )
 
         if output != None:
           self.server.privmsg( user, output )
+ 
     else:
       print "PRIVMSG from", arg.source(), ":", args
       output = chat.parse( user, args, self.server.nickname, True, False )
