@@ -19,10 +19,10 @@ mods = ("makos", "fatapaca")
 
 #Channels
 #Defalt output channel for some commands is first channel
-#channels = [ "#infinite-stratos", "#ujelly", "#madoka", "#k-on-game", "#koihime", "#pswg" ]
-channels = [ "#ujelly" ]
+channels = [ "#infinite-stratos", "#ujelly", "#madoka", "#k-on-game", "#koihime", "#pswg" ]
+#channels = [ "#ujelly" ]
 
-nick = "Jellybot"
+nick = "Jollybot"
 con = "irc.rizon.net"
 user = "ujelly"
 port = 6667
@@ -435,8 +435,8 @@ class Bot:
 		    if len(arg) < 2:
 		      return
 		  
-		    print "Updating topic with thread number", arg[1]
-		    self.server.topic(channels[0], settopic.set_topic(arg[1]))
+		    print "Updating topic with", arg[2], arg[3]
+		    self.server.topic(arg[1], settopic.set_topic(arg[2], arg[3]))
         
       else:
         
