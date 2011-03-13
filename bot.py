@@ -5,7 +5,7 @@ import irclib, re, random, time, sys, threading, logging
 irclib.DEBUG=False # True for shitload of verbose text
 
 #Plugins
-import loli, checkem, eightball, google, gelbooru, timeleft, chat, gelboorus, tlnote, tweets, gtranslate, settopic
+import loli, checkem, eightball, google, gelbooru, timeleft, chat, gelboorus, tlnote, tweets, gtranslate, settopic, fourchan
 
 logging.basicConfig(filename='jellybot.log',level=logging.DEBUG)
 
@@ -14,6 +14,7 @@ ops = {"UbrFrG":"South Africa", "makos":"Poland", "fatapaca":"Latvia", "Feath":"
 
 # Chosen Ones
 mods = ("makos", "fatapaca")
+derp = ( "UbrFrG" )
 
 # Global Settings
 
@@ -34,6 +35,7 @@ class Bot:
   public = 1
   gaia   = True
   #running = True
+  thread =  "47004373"
 
   pomfdown = int( time.time() )
   baww     = int( time.time() )
@@ -69,6 +71,48 @@ class Bot:
             self.server.privmsg(channel, ":: Engrish >> %s" % ( gtranslate._translate(text).encode("utf8") ))
 
           latest = id
+
+      time.sleep(interval)
+
+  def thread_update(self, interval):
+    print "Starting 4chan update thread, sleeping"
+    time.sleep(interval)
+
+    last_post = None
+
+    while True:
+
+      thread = None
+
+      print "Searching for new posts"
+
+      try:
+        thread = fourchan.parse_thread( "a", self.thread )
+      except Exception, e:
+        print "I derped"
+        print "-" * 40
+        print e
+        continue
+
+      if thread:
+        #Last post
+        post = thread.posts[-1]
+
+        if post.id == last_post:
+          print "No new posts"
+          time.sleep(interval)
+          continue
+          
+        if not post.text:
+          print "No text"
+          time.sleep(interval)
+          continue
+        
+        message = ">>/a/%s#%s %s" % ( self.thread, post.id, post.text ) 
+
+        self.server.privmsg( "#infinite-stratos",  message)
+
+        last_post = post.id
 
       time.sleep(interval)
 
@@ -114,6 +158,11 @@ class Bot:
       self.server.privmsg( user, "Added: {}".format( note ) )
 
       tlnote._close()
+
+    elif "!thread" in args:
+      if chan == "#infinite-stratos":
+        thread = "http://boards.4chan.org/a/res/%s" % self.thread
+        self.server.privmsg(chan, "Current thread: %s" % thread)
 
     elif re.search("^(!eightball|!8ball)", args):       # To have the ^ wildcard working in regexp we need to strip args from ['] first.
       self.server.privmsg( chan, eightball.eightball( user ) )
@@ -453,7 +502,15 @@ class Bot:
 
         if output != None:
           self.server.privmsg( user, output )
- 
+    elif user in derp or user in mods:
+      if ".thread" in args:
+        arg = args.split()
+        if len(arg) > 1:
+          return
+        
+        self.server.privmsg(user, "Current thread is now: %s" % arg[1])
+        self.thread = arg[1]
+
     else:
       print "PRIVMSG from", arg.source(), ":", args
       output = chat.parse( user, args, self.server.nickname, True, False )
@@ -495,13 +552,15 @@ class Bot:
     twitter.setDaemon(True)
     twitter.start()
 
+    chan = threading.Thread( target=self.thread_update, args=([60]) )
+    chan.setDaemon(True)
+    chan.start()
+
     try:
       self.irc.process_forever()
     except KeyboardInterrupt, e:
       print "Exiting"
       sys.exit()
-
-
 
 if __name__ == "__main__":
   bot = Bot()
