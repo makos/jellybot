@@ -88,6 +88,12 @@ class Bot:
 
       try:
         thread = fourchan.parse_thread( "a", self.thread )
+        
+        #Download images
+        fourchan.download_images(thread)
+
+        #Save json data of thread
+        thread.save()
       except Exception, e:
         print "I derped"
         print "-" * 40
