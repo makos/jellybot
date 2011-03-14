@@ -10,8 +10,10 @@ def stalk( name = "choroyama", num = 5, start = None):
   try:
     tweets = api.GetUserTimeline(screen_name=name, count=num, since_id=start)
     return tweets
-  except:
+  except Exception, e:
     print "Shit, something's wrong"
+    print "-" * 40
+    print e
 
   return
 
