@@ -214,6 +214,10 @@ class Bot:
       self.server.privmsg( chan, eightball.eightball( user ) )
 
     elif re.search( "^!loli", args):
+      
+      if user == "Ika-Neechan":
+        self.server.privmsg(chan, "NOPE.jpg")
+        return
 
       #Open db and create if needed
       loli.open()
@@ -241,6 +245,10 @@ class Bot:
       logging.debug("%s is attempting to steal lolis from %s" % ( user, target ))
 
       if user == target:
+        return
+
+      if user == "Ika-Neechan":
+        self.server.privmsg(chan, "NOPE.jpg")
         return
 
       #Open db
@@ -557,7 +565,8 @@ class Bot:
       
       elif ".thread" in args:
         arg = args.split()
-        if len(arg) > 1:
+
+        if len(arg) < 1:
           return
         
         self.server.privmsg(user, "Current thread is now: %s" % arg[1])
