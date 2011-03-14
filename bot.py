@@ -35,7 +35,7 @@ class Bot:
   public = 1
   gaia   = True
   #running = True
-  thread =  "47004373"
+  thread =  "47047124"
 
   pomfdown = int( time.time() )
   baww     = int( time.time() )
@@ -554,6 +554,15 @@ class Bot:
         print ep
 		    
         self.server.topic(chan, settopic.set_topic(thread, ep))
+      
+      elif ".thread" in args:
+        arg = args.split()
+        if len(arg) > 1:
+          return
+        
+        self.server.privmsg(user, "Current thread is now: %s" % arg[1])
+        self.thread = arg[1]
+
         
       else:
         
@@ -561,14 +570,6 @@ class Bot:
 
         if output != None:
           self.server.privmsg( user, output )
-    elif user in derp or user in mods:
-      if ".thread" in args:
-        arg = args.split()
-        if len(arg) > 1:
-          return
-        
-        self.server.privmsg(user, "Current thread is now: %s" % arg[1])
-        self.thread = arg[1]
 
     else:
       print "PRIVMSG from", arg.source(), ":", args
