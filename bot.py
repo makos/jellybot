@@ -94,10 +94,14 @@ class Bot:
 
         #Save json data of thread
         thread.save()
+
       except Exception, e:
-        print "I derped"
-        print "-" * 40
-        print e
+        if str(e).find("Error 404") !=-1:
+          print "Thread %s 404d" % self.thread
+          time.sleep(interval * 2)
+        else:
+          print e
+          
         continue
 
       if thread:
@@ -115,8 +119,13 @@ class Bot:
           continue
         
         message = ">>/a/%s#%s %s" % ( self.thread, post.id, post.text ) 
-
-        self.server.privmsg( "#infinite-stratos",  message)
+        
+        try:
+          self.server.privmsg( "#infinite-stratos",  message)
+        except UnicodeEncodeError, e:
+          print "derp"
+          print "-" * 40
+          print e
 
         last_post = post.id
 
@@ -494,13 +503,26 @@ class Bot:
 
 	    
       elif re.search(".settopic", args):
-		    arg = args.split()
-		  
-		    if len(arg) < 3:
-		      return
-		  
-		    print "Updating topic with", arg[2], arg[3]
-		    self.server.topic(arg[1], settopic.set_topic(arg[2], arg[3]))
+        """".settopic #chan thread episode"""
+        
+        arg = args.split()
+        print arg
+        
+        if len(arg) < 3:
+          return
+        
+        chan   = arg[1]
+        thread = arg[2]
+        ep     = None
+
+        if len(arg) > 3:
+          ep = arg[3]
+
+        print chan
+        print thread
+        print ep
+		    
+        self.server.topic(chan, settopic.set_topic(thread, ep))
         
       else:
         
