@@ -5,7 +5,7 @@ import irclib, re, random, time, sys, threading, logging
 irclib.DEBUG=False # True for shitload of verbose text
 
 #Plugins
-import loli, checkem, eightball, google, gelbooru, timeleft, chat, gelboorus, tlnote, tweets, gtranslate, settopic, fourchan
+import loli, checkem, eightball, google, gelbooru, timeleft, chat, gelboorus, tlnote, tweets, gtranslate, settopic, fourchan, ustream
 
 logging.basicConfig(filename='jellybot.log',level=logging.DEBUG)
 
@@ -21,7 +21,7 @@ derp = ( "UbrFrG" )
 #Channels
 #Defalt output channel for some commands is first channel
 channels = [ "#infinite-stratos", "#ujelly", "#madoka", "#k-on-game", "#koihime", "#pswg" ]
-#channels = [ "#ujelly" ]
+#channels = [ "#pswg" ]
 
 nick = "Jellybot"
 con = "irc.rizon.net"
@@ -130,6 +130,37 @@ class Bot:
         last_post = post.id
 
       time.sleep(interval)
+
+  def check_ustream(self, channel, interval = 60):
+
+    time.sleep(10)
+
+    notified = False
+
+    while True:
+
+      status = ustream.is_on(channel)
+      print status
+
+      if status:
+        print "streaman"
+
+        if notified:
+          print "Already spammed"
+          time.sleep(interval)
+          continue
+
+        self.server.privmsg("#pswg", "Choroyama's broadcast has started, START RIPPING")
+        self.server.privmsg("#pswg", "Watch at http://www.ustream.tv/channel/choroyama")
+
+        notified = True
+      else:
+        print "Not sreaman"
+        notified = False
+
+
+      time.sleep(interval)
+
 
   def callback(self, handle, arg):
     """Standard callback function. Defines default commands to be used by typing them into chat."""
@@ -576,13 +607,17 @@ class Bot:
     twitter.setDaemon(True)
     twitter.start()
 
-    twitter = threading.Thread( target=self.twitter_update,args=( "TeddyLoidSpace", 3, 600 ) )
+    twitter = threading.Thread( target=self.twitter_update,args=( "TeddyLoidSpace", 1, 600 ) )
     twitter.setDaemon(True)
     twitter.start()
 
     chan = threading.Thread( target=self.thread_update, args=([60]) )
     chan.setDaemon(True)
     chan.start()
+
+    ustream = threading.Thread( target=self.check_ustream, args=("choroyama", 60) )
+    ustream.setDaemon(True)
+    ustream.start()
 
     try:
       self.irc.process_forever()
