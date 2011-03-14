@@ -38,7 +38,7 @@ class Thread(object):
 
   def save(self):
 
-    target = os.path.join(os.getcwd(), self.board, self.thread, "thread.js")
+    target = os.path.join(self.board, self.thread, "thread.js")
     
     posts = []
     dump  = {}
@@ -153,7 +153,7 @@ def download_images(thread):
   interval  = 0
   overwrite = False
 
-  base = os.path.join(os.getcwd(), thread.board, thread.thread, "images")
+  base = os.path.join(thread.board, thread.thread, "images")
 
   if not os.path.exists(base):
     os.makedirs(base)
@@ -164,10 +164,10 @@ def download_images(thread):
       
       if os.path.exists(path):
         if not overwrite and os.path.getsize(path) != 0:
-          print u"Skip: image %s already exists" % post.image.filename
           continue
         
       print u"downloading %s to %s" % (post.image.url, post.image.filename)
+
       with open(path, 'w') as f:
         try:
           remote = urllib2.urlopen(post.image.url)
@@ -187,10 +187,6 @@ if __name__ == "__main__":
   thread = "47004373"
 
   thread = parse_thread( board, thread )
-
-  for post in thread.posts:
-    print post
-    print post.text
 
   download_images(thread)
 
