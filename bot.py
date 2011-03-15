@@ -15,7 +15,7 @@ ops = {"UbrFrG":"South Africa", "makos":"Poland", "fatapaca":"Latvia", "Feath":"
 # Chosen Ones
 mods = ("makos", "fatapaca")
 
-# Faggots                  #ShiroKen
+# Faggots                             #ShiroKen
 faggots = ( "Ika-Neechan", "ShiroKen", "Rizon-122C7F8A.cable.virginmedia.com" )
 
 # Global Settings
@@ -67,10 +67,10 @@ class Bot:
           text = s.text
           id   = s.id
 
-          self.server.privmsg(channel, "%s [Posted by %s %s.]" % ( text.encode("utf8"), name, s.relative_created_at ))
+          self.server.notice(channel, "%s [Posted by %s %s.]" % ( text.encode("utf8"), name, s.relative_created_at ))
 
           if tl:
-            self.server.privmsg(channel, ":: Engrish >> %s" % ( gtranslate._translate(text).encode("utf8") ))
+            self.server.notice(channel, ":: Engrish >> %s" % ( gtranslate._translate(text).encode("utf8") ))
 
           latest = id
 
@@ -123,7 +123,7 @@ class Bot:
         message = ">>/a/%s#%s %s" % ( self.thread, post.id, post.text ) 
         
         try:
-          self.server.privmsg( "#infinite-stratos",  message)
+          self.server.notice( "#infinite-stratos",  message)
         except UnicodeEncodeError, e:
           print "derp"
           print "-" * 40
@@ -148,8 +148,8 @@ class Bot:
           time.sleep(interval)
           continue
 
-        self.server.privmsg("#pswg", "%s's broadcast has started, START RIPPING" % channel)
-        self.server.privmsg("#pswg", "Watch at http://www.ustream.tv/channel/%s" % channel)
+        self.server.notice("#pswg", "%s's broadcast has started, START RIPPING" % channel)
+        self.server.notice("#pswg", "Watch at http://www.ustream.tv/channel/%s" % channel)
         notified = True
       else:
         notified = False
@@ -167,8 +167,6 @@ class Bot:
     
     for faggot in faggots:
         if re.search(faggot, host):
-          print "%s is a faggot, so" % user
-          print "** NOPE.jpg"
           return
 
     if "!help" in args:
@@ -177,7 +175,7 @@ class Bot:
       output = checkem.checkem( user )
 
       if output:
-        self.server.privmsg(chan, output )
+        self.server.notice(chan, output )
 
     elif "!tlnote" in args:
       tlnote._open()
@@ -186,7 +184,7 @@ class Bot:
       note = tlnote.tlnote()
 
       if note:
-        self.server.privmsg(chan, note)
+        self.server.notice(chan, note)
 
       tlnote._close()
 
@@ -210,10 +208,10 @@ class Bot:
     elif "!thread" in args:
       if chan == "#infinite-stratos":
         thread = "http://boards.4chan.org/a/res/%s" % self.thread
-        self.server.privmsg(chan, "Current thread: %s" % thread)
+        self.server.notice(chan, "Current thread: %s" % thread)
 
     elif re.search("^(!eightball|!8ball)", args):       # To have the ^ wildcard working in regexp we need to strip args from ['] first.
-      self.server.privmsg( chan, eightball.eightball( user ) )
+      self.server.notice( chan, eightball.eightball( user ) )
 
     elif re.search( "^!loli", args):
 
@@ -225,7 +223,7 @@ class Bot:
       output = loli.loli( user )
 
       if output:
-        self.server.privmsg(chan, output )
+        self.server.notice(chan, output )
 
       #Close db
       loli.save()
@@ -259,7 +257,7 @@ class Bot:
       output = loli.steal( user, target )
 
       if output:
-        self.server.privmsg(chan, output )
+        self.server.notice( chan, output )
 
       #Close db
       loli.save()
@@ -274,7 +272,7 @@ class Bot:
         _i = 1
 
         for user in data:
-          self.server.privmsg(chan, "#{} :: {} with {} lolis\n".format( _i, user[0], user[1], ) )
+          self.server.notice(chan, "#{} :: {} with {} lolis\n".format( _i, user[0], user[1], ) )
           _i += 1
 
     elif re.search( "^!google", args ):
@@ -286,7 +284,8 @@ class Bot:
 
       _query = arguments[1:]
 
-      self.server.privmsg( chan, google.search( user, " ".join( _query ) ) )
+      self.server.notice( chan, google.search( user, " ".join( _query ) ) )
+
     elif re.search( "^!moon", args ):
 
       arguments = args.split(" ")
@@ -297,7 +296,7 @@ class Bot:
       text = " ".join( arguments[1:] )
       tl   = gtranslate._translate( text.decode('utf8') )
 
-      self.server.privmsg( chan, "%s, moon >> engrish :: %s" % ( user, tl.encode('utf8') ) )
+      self.server.notice( chan, "%s, moon >> engrish :: %s" % ( user, tl.encode('utf8') ) )
 
     elif re.search("^!gelbooru", args):
 
@@ -308,11 +307,11 @@ class Bot:
 
       _query = arguments[1:]
 
-      self.server.privmsg( chan, gelbooru.open( " ".join( _query ) ) )
+      self.server.notice( chan, gelbooru.open( " ".join( _query ) ) )
 
     elif re.search( "^!timeleft", args ):
 
-      self.server.privmsg(chan, timeleft.timeleft( user ))
+      self.server.notice(chan, timeleft.timeleft( user ))
 
     elif re.search("^POMF =3", args):
 
@@ -359,16 +358,14 @@ class Bot:
       self.server.privmsg(chan, "THE TRUTH EXISTS BEYOND THE GATE")
     elif re.search("THE TRUTH (EXISTS|LIES|IS) BEYOND THE GATE", args, re.IGNORECASE):
       self.server.privmsg(chan, "*guitar riff*")
-    elif re.search("(X|x|:|;|=)(P|D|\)|\(|\/|\\\)|((>|<|\*|O|o|\^)(\.*|_*|-*)(>|<|\*|O|o|\^))", args):
 
-      if self.gaia:
-        return  #We'ŗe in GAIA, nothing to do here.
+    elif re.search("(X|x|:|;|=)(P|D|\)|\(|\/|\\\)|((>|<|\*|O|o|\^)(\.*|_*|-*)(>|<|\*|O|o|\^))", args) and not self.gaia:
 
       if chan == "#madoka": #Derp
         return
 
       if not random.randint(0,4): #25%
-        self.server.privmsg(chan, "{}, gb2 >>>/gaia/".format(user))
+        self.server.notice(user, "{}, gb2 >>>/gaia/".format(user))
 
     elif re.search("^!gsearch", args):
       arguments = args.split(" ")
@@ -426,7 +423,7 @@ class Bot:
     """Callback function greeting users joining the channel."""
 
     if irclib.nm_to_n(arg.source()) in ops.keys():
-      self.server.privmsg( arg.target(), "{0}, the representative candidate from {1} is here!".format(irclib.nm_to_n(arg.source()), ops.get(irclib.nm_to_n(arg.source()))))
+      self.server.notice( arg.target(), "{0}, the representative candidate from {1} is here!".format(irclib.nm_to_n(arg.source()), ops.get(irclib.nm_to_n(arg.source()))))
       logging.debug("JOIN: %s" % arg.source())
     else:
       pass
@@ -628,10 +625,12 @@ class Bot:
     ustream = threading.Thread( target=self.check_ustream, args=("choroyama", 60) )
     ustream.setDaemon(True)
     ustream.start()
-
+    
+    """
     ustream = threading.Thread( target=self.check_ustream, args=("mogra1", 60) )
     ustream.setDaemon(True)
     ustream.start()
+    """
 
 
     try:

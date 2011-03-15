@@ -1,5 +1,4 @@
 #!/usr/bin/env python2
-
 import sqlite3
 import random
 import time
@@ -28,7 +27,6 @@ def save():
 
 def create ():
   """Creates table structure"""
-
   cur.execute( 'CREATE TABLE IF NOT EXISTS lolis (user TEXT, lolis INTEGER, time INTEGER, stime INTEGER)' )
 
 def add( user, lolis, act = 0 ):
@@ -119,16 +117,7 @@ def loli( user ):
   lolis += newlolis
 
   #Announce results
-  if newlolis == 0:
-    output = "Fukou da. {} didn't get any lolis this time, but {} still has {} lolis left.".format( user, user, lolis )
-  elif newlolis == 1:
-    output = "{} got one more loli, {} now has {} lolis in total!".format( user, user, lolis)
-  elif newlolis > 10:
-    output = "{} is SUPER PEDO and got {} lolis and {} already has {}".format( user, newlolis, user, lolis )
-  elif newlolis > 5:
-    output = "{} was lucky this time, he escaped partyvan with {} lolis and bitches still don't know 'bout his {} lolis.". format( user, newlolis, lolis )
-  else:
-    output = "{} got, {} lolis with total of {} lolis!".format( user, newlolis, lolis)
+  output = "{} +{} lolis [TOT: {}]".format( user, newlolis, lolis)
 
   #Save data
   if mode == 0:
@@ -200,7 +189,7 @@ def steal( caller, target ):
     update( caller, c_lolis, 1)
 
   if loot <= 0:
-    return "{} couldn't steal any lolis from {}".format( caller, target )
+    return "{} CAN'T INTO STEALING".format( caller )
 
   #Save targets data
   if t_mode == 0:
@@ -209,7 +198,7 @@ def steal( caller, target ):
   elif t_mode == 1:
     update( target, t_lolis, 2)
 
-  return "{} stole {} lolis from {} and now has a total of {} lolis.".format( caller, loot, target, c_lolis )
+  return "{} +{}, {} -{} lolis".format( caller, loot, target, loot )
 
 def top( limit = 5, order = "DESC" ):
 
@@ -233,3 +222,13 @@ def top5():
   last_top = int(time.time())
 
   return top( 5, "DESC" )
+
+if __name__ == "__main__":
+  open()
+  create()
+  print loli("fatapaca")
+  print loli("makos")
+  print steal("fatapaca", "makos")
+  print steal("makos", "fatapaca")
+  save()
+
