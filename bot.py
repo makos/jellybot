@@ -14,14 +14,16 @@ ops = {"UbrFrG":"South Africa", "makos":"Poland", "fatapaca":"Latvia", "Feath":"
 
 # Chosen Ones
 mods = ("makos", "fatapaca")
-derp = ( "UbrFrG" )
+
+# Faggots                  #ShiroKen
+faggots = ( "Ika-Neechan", "ShiroKen", "Rizon-122C7F8A.cable.virginmedia.com" )
 
 # Global Settings
 
 #Channels
 #Defalt output channel for some commands is first channel
 channels = [ "#infinite-stratos", "#ujelly", "#madoka", "#k-on-game", "#koihime", "#pswg" ]
-#channels = [ "#pswg" ]
+#channels = [ "#ujelly" ]
 
 nick = "Jellybot"
 con = "irc.rizon.net"
@@ -140,24 +142,17 @@ class Bot:
     while True:
 
       status = ustream.is_on(channel)
-      print status
 
       if status:
-        print "streaman"
-
         if notified:
-          print "Already spammed"
           time.sleep(interval)
           continue
 
-        self.server.privmsg("#pswg", "Choroyama's broadcast has started, START RIPPING")
-        self.server.privmsg("#pswg", "Watch at http://www.ustream.tv/channel/choroyama")
-
+        self.server.privmsg("#pswg", "%s's broadcast has started, START RIPPING" % channel)
+        self.server.privmsg("#pswg", "Watch at http://www.ustream.tv/channel/%s" % channel)
         notified = True
       else:
-        print "Not sreaman"
         notified = False
-
 
       time.sleep(interval)
 
@@ -165,9 +160,16 @@ class Bot:
   def callback(self, handle, arg):
     """Standard callback function. Defines default commands to be used by typing them into chat."""
 
-    user = irclib.nm_to_n(arg.source())
+    host = arg.source()
+    user = irclib.nm_to_n(host)
     args = arg.arguments()[0]
     chan = arg.target()
+    
+    for faggot in faggots:
+        if re.search(faggot, host):
+          print "%s is a faggot, so" % user
+          print "** NOPE.jpg"
+          return
 
     if "!help" in args:
       self.server.privmsg(user, self.help(user))
@@ -214,10 +216,6 @@ class Bot:
       self.server.privmsg( chan, eightball.eightball( user ) )
 
     elif re.search( "^!loli", args):
-      
-      if user == "Ika-Neechan":
-        self.server.privmsg(chan, "NOPE.jpg")
-        return
 
       #Open db and create if needed
       loli.open()
@@ -246,10 +244,12 @@ class Bot:
 
       if user == target:
         return
-
-      if user == "Ika-Neechan":
-        self.server.privmsg(chan, "NOPE.jpg")
+      
+      """
+      if target in mods: #Because I can
+        self.server.privmsg(chan, "NOPE.exe")
         return
+      """
 
       #Open db
       loli.open()
@@ -628,6 +628,11 @@ class Bot:
     ustream = threading.Thread( target=self.check_ustream, args=("choroyama", 60) )
     ustream.setDaemon(True)
     ustream.start()
+
+    ustream = threading.Thread( target=self.check_ustream, args=("mogra1", 60) )
+    ustream.setDaemon(True)
+    ustream.start()
+
 
     try:
       self.irc.process_forever()
