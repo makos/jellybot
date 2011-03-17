@@ -15,7 +15,7 @@ def _call(channel):
   call += "&subject=channel"
   call += "&uid=%s" % channel
   call += "&command=getinfo"
-  call += "&key=<>"
+  call += "&key=0489ED89B2C20CB9A1B3B0B4DC96E5C1"
 
   output = urllib2.urlopen(call)
   _json = json.load(output)

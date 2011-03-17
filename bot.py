@@ -15,14 +15,14 @@ ops = {"UbrFrG":"South Africa", "makos":"Poland", "fatapaca":"Latvia", "Feath":"
 # Chosen Ones
 mods = ("makos", "fatapaca")
 
-# Faggots                             #ShiroKen
-faggots = ( "Ika-Neechan", "ShiroKen", "Rizon-122C7F8A.cable.virginmedia.com" )
+# Faggots
+faggots = ( "ShiroKen", "Rizon-122C7F8A.cable.virginmedia.com" )
 
 # Global Settings
 
 #Channels
 #Defalt output channel for some commands is first channel
-channels = [ "#infinite-stratos", "#ujelly", "#madoka", "#k-on-game", "#koihime", "#pswg" ]
+channels = [ "#infinite-stratos", "#ujelly", "#k-on-game", "#pswg" ]
 #channels = [ "#ujelly" ]
 
 nick = "Jellybot"
@@ -45,16 +45,11 @@ class Bot:
 
   def twitter_update( self, name, num = 5, interval = 60, tl = True, channel = "#pswg" ):
 
-    #Sleep for first time, since we probably aren't in channel yet
-    logging.debug("[Twitter :: %s] Thread started, sleeping." % ( name ))
-
     time.sleep(interval)
 
     latest = None
 
     while True:
-
-      logging.debug("[Twitter :: %s] Updating twitter feed" % ( name ))
 
       output = tweets.stalk( name, num, latest )
 
@@ -77,7 +72,6 @@ class Bot:
       time.sleep(interval)
 
   def thread_update(self, interval):
-    print "Starting 4chan update thread, sleeping"
     time.sleep(interval)
 
     last_post = None
@@ -85,8 +79,6 @@ class Bot:
     while True:
 
       thread = None
-
-      print "Searching for new posts"
 
       try:
         thread = fourchan.parse_thread( "a", self.thread )
@@ -111,12 +103,10 @@ class Bot:
         post = thread.posts[-1]
 
         if post.id == last_post:
-          print "No new posts"
           time.sleep(interval)
           continue
           
         if not post.text:
-          print "No text"
           time.sleep(interval)
           continue
         
@@ -171,11 +161,13 @@ class Bot:
 
     if "!help" in args:
       self.server.privmsg(user, self.help(user))
+
+      """ Useless faggotry
     elif "!checkem" in args:
       output = checkem.checkem( user )
 
       if output:
-        self.server.notice(chan, output )
+        self.server.notice(user, output )
 
     elif "!tlnote" in args:
       tlnote._open()
@@ -204,6 +196,7 @@ class Bot:
       self.server.privmsg( user, "Added: {}".format( note ) )
 
       tlnote._close()
+      """
 
     elif "!thread" in args:
       if chan == "#infinite-stratos":
@@ -211,7 +204,7 @@ class Bot:
         self.server.notice(chan, "Current thread: %s" % thread)
 
     elif re.search("^(!eightball|!8ball)", args):       # To have the ^ wildcard working in regexp we need to strip args from ['] first.
-      self.server.notice( chan, eightball.eightball( user ) )
+      self.server.notice( user, eightball.eightball( user ) )
 
     elif re.search( "^!loli", args):
 
@@ -223,7 +216,7 @@ class Bot:
       output = loli.loli( user )
 
       if output:
-        self.server.notice(chan, output )
+        self.server.notice(user, output )
 
       #Close db
       loli.save()
@@ -257,23 +250,33 @@ class Bot:
       output = loli.steal( user, target )
 
       if output:
-        self.server.notice( chan, output )
+        self.server.notice( "%s,%s" % (user, target), output )
 
       #Close db
       loli.save()
 
     elif re.search( "^!top5", args):
+      print args
+      print user
+
       loli.open()
       loli.create()
 
       data = loli.top5()
+      
+      print data
 
       if data:
         _i = 1
 
         for user in data:
-          self.server.notice(chan, "#{} :: {} with {} lolis\n".format( _i, user[0], user[1], ) )
+          print user
+          out = "%s. - %s with %s lolis" % ( _i, user[0], user[1], ) 
+          print out
+          self.server.privmsg(chan, out)
           _i += 1
+
+      loli.save()
 
     elif re.search( "^!google", args ):
 
@@ -284,7 +287,7 @@ class Bot:
 
       _query = arguments[1:]
 
-      self.server.notice( chan, google.search( user, " ".join( _query ) ) )
+      self.server.notice( user, google.search( user, " ".join( _query ) ) )
 
     elif re.search( "^!moon", args ):
 
@@ -296,7 +299,7 @@ class Bot:
       text = " ".join( arguments[1:] )
       tl   = gtranslate._translate( text.decode('utf8') )
 
-      self.server.notice( chan, "%s, moon >> engrish :: %s" % ( user, tl.encode('utf8') ) )
+      self.server.notice( user, "%s, moon >> engrish :: %s" % ( user, tl.encode('utf8') ) )
 
     elif re.search("^!gelbooru", args):
 
@@ -307,11 +310,11 @@ class Bot:
 
       _query = arguments[1:]
 
-      self.server.notice( chan, gelbooru.open( " ".join( _query ) ) )
+      self.server.notice( user, gelbooru.open( " ".join( _query ) ) )
 
     elif re.search( "^!timeleft", args ):
-
-      self.server.notice(chan, timeleft.timeleft( user ))
+      if chan == "#infinite-stratos":
+        self.server.notice(chan, timeleft.timeleft( user ))
 
     elif re.search("^POMF =3", args):
 
@@ -375,7 +378,7 @@ class Bot:
 
       _query = arguments[1:]
 
-      self.server.privmsg( chan, str(gelboorus.search( " ".join( _query ) ) ) )
+      self.server.notice( user, str(gelboorus.search( " ".join( _query ) ) ) )
 
     else:
       mentioned = 0
@@ -611,10 +614,6 @@ class Bot:
     self.server.add_global_handler("invite", self.invite)
 
     twitter = threading.Thread( target=self.twitter_update,args=( "choroyama", 3, 60 ) )
-    twitter.setDaemon(True)
-    twitter.start()
-
-    twitter = threading.Thread( target=self.twitter_update,args=( "TeddyLoidSpace", 1, 600 ) )
     twitter.setDaemon(True)
     twitter.start()
 

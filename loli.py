@@ -212,9 +212,9 @@ def top5():
 
   interval = 600
   thetime  = int(time.time())
-
+  
   global last_top
-
+  
   if last_top:
     if( ( thetime - last_top ) < interval ):
       return
@@ -230,5 +230,6 @@ if __name__ == "__main__":
   print loli("makos")
   print steal("fatapaca", "makos")
   print steal("makos", "fatapaca")
+  print top5()
   save()
 
