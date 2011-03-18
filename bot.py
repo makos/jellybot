@@ -37,7 +37,9 @@ class Bot:
   public = 1
   gaia   = True
   #running = True
-  thread =  "47047124"
+  thread =  "47138647"
+
+  steal_lastperson = None
 
   pomfdown = int( time.time() )
   baww     = int( time.time() )
@@ -235,6 +237,12 @@ class Bot:
 
       if user == target:
         return
+
+      #Little protection for gangrape
+      if target == self.steal_lastperson:
+        return
+
+      self.steal_lastperson = target
       
       """
       if target in mods: #Because I can
