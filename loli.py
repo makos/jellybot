@@ -189,7 +189,7 @@ def steal( caller, target ):
     update( caller, c_lolis, 1)
 
   if loot <= 0:
-    return "{} CAN'T INTO STEALING".format( caller )
+    return "{} CAN'T INTO STEALING".format( caller.upper() )
 
   #Save targets data
   if t_mode == 0:

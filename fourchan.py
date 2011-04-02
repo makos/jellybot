@@ -184,7 +184,7 @@ def download_images(thread):
 
 if __name__ == "__main__":
   board = "a"
-  thread = "47004373"
+  thread = "47414335"
 
   thread = parse_thread( board, thread )
 

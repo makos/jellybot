@@ -37,7 +37,7 @@ class Bot:
   public = 1
   gaia   = True
   #running = True
-  thread =  "47138647"
+  thread =  "47196602"
 
   steal_lastperson = None
 
@@ -125,27 +125,39 @@ class Bot:
 
       time.sleep(interval)
 
-  def check_ustream(self, channel, interval = 60):
+  def check_ustream(self, channels, interval = 60):
 
     time.sleep(10)
 
-    notified = False
+    notified = {}
+
+    for c in channels:
+      notified[c] = False
 
     while True:
+    
+      for channel in channels:
+        
+        print "Checking channel %s" % channel
 
-      status = ustream.is_on(channel)
-
-      if status:
-        if notified:
-          time.sleep(interval)
-          continue
-
-        self.server.notice("#pswg", "%s's broadcast has started, START RIPPING" % channel)
-        self.server.notice("#pswg", "Watch at http://www.ustream.tv/channel/%s" % channel)
-        notified = True
-      else:
-        notified = False
-
+        status = ustream.is_on(channel)
+      
+        if status:
+          print "It's on"
+          
+          if notified[channel]:
+            print "Already spammed"
+            continue
+          
+          print "Spamming"
+          self.server.notice("#pswg", "%s's broadcast has started, START RIPPING" % channel)
+          self.server.notice("#pswg", "Watch at http://www.ustream.tv/channel/%s" % channel)
+          
+          notified[channel] = True
+        else:
+          notified[channel] = False
+      
+      
       time.sleep(interval)
 
 
@@ -322,7 +334,7 @@ class Bot:
 
     elif re.search( "^!timeleft", args ):
       if chan == "#infinite-stratos":
-        self.server.notice(chan, timeleft.timeleft( user ))
+        self.server.privmsg(chan, timeleft.timeleft( user ))
 
     elif re.search("^POMF =3", args):
 
@@ -434,7 +446,7 @@ class Bot:
     """Callback function greeting users joining the channel."""
 
     if irclib.nm_to_n(arg.source()) in ops.keys():
-      self.server.notice( arg.target(), "{0}, the representative candidate from {1} is here!".format(irclib.nm_to_n(arg.source()), ops.get(irclib.nm_to_n(arg.source()))))
+      self.server.privmsg( arg.target(), "{0}, the representative candidate from {1} is here!".format(irclib.nm_to_n(arg.source()), ops.get(irclib.nm_to_n(arg.source()))))
       logging.debug("JOIN: %s" % arg.source())
     else:
       pass
@@ -629,17 +641,10 @@ class Bot:
     chan.setDaemon(True)
     chan.start()
 
-    ustream = threading.Thread( target=self.check_ustream, args=("choroyama", 60) )
+    ustream = threading.Thread( target=self.check_ustream, args=(("choroyama", "mogra1"), 60) )
     ustream.setDaemon(True)
     ustream.start()
     
-    """
-    ustream = threading.Thread( target=self.check_ustream, args=("mogra1", 60) )
-    ustream.setDaemon(True)
-    ustream.start()
-    """
-
-
     try:
       self.irc.process_forever()
     except KeyboardInterrupt, e:
